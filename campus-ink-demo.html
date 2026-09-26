@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="RBW0yw8qFXXCOKHzmYrELv">
+<head data-page-node-id="NPNmJECnK4a6pxEFcjRwjy">
+<meta charset="UTF-8" data-page-node-id="s4nvJ6dyCEt45kRPPHPcuw">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="HWN6xkaYd8AtW9JCaHIrig">
+<title>五校园 · 点触动画样例 | 中大招宣概念稿</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 L29 10.5 L16 18 L3 10.5 Z' fill='%23C9A24B'/%3E%3Cpath d='M3 10.5 L16 18 L16 29 L3 21.5 Z' fill='%238B3A2E'/%3E%3Cpath d='M29 10.5 L16 18 L16 29 L29 21.5 Z' fill='%231E3D2C'/%3E%3C/svg%3E" data-page-node-id="y7mWS7mHKg8dvmoVcVvk0z">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" data-page-node-id="SnBWWYKFwn6kKsUUXs1K6K">
+<style>
+  :root{
+    --paper:#F5F1E8;
+    --ink:#1F4D38;
+    --green:#2F5D46;
+    --brick:#8B3A2E;
+    --gold:#C9A24B;
+    --line:#D8CFBC;
+    --sheet:#E8D9BA;
+    --rule:rgba(166,58,46,.40);
+    --sheet-ink:#4B3A28;
+    --cs:clamp(36px,5.45vh,62px);       /* 静置字径（方案二：放大 1.32×） */
+    --chh:calc(var(--cs) * 1.4545);     /* 单字高度：与字形 viewBox 同比，杜绝拉伸留白 */
+    --colh:calc(var(--chh) * 5 + var(--cs) * 0.66);  /* 五字竖列总高 */
+    --zoom:1.80;                        /* 点触后放大倍数 */
+    --rail-vw:18;                       /* 信纸左侧通道宽度（vw 数值，JS 可读） */
+    --rail-w:calc(var(--rail-vw) * 1vw);/* 给左上角放大后的字列走位 */
+    --bolt-opacity:.20;                 /* 折线「闪电」连线的不透明度，设 0 即隐藏 */
+    --band-h:33.334vh;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:'Noto Sans SC',system-ui,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+    line-height:1.7;overflow:hidden;-webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(255,255,255,.7), rgba(255,255,255,0) 62%),
+      radial-gradient(70% 50% at 50% 112%, rgba(120,110,80,.10), rgba(120,110,80,0) 70%);
+  }
+
+  /* ================= 主舞台 ================= */
+  .stage{
+    position:relative;z-index:2;height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:6.2vh 4vw 3vh;
+  }
+  .head{text-align:center;transition:opacity .5s ease,transform .55s ease}
+  body.open .head{opacity:0;transform:translateY(-16px);pointer-events:none}
+  .eyebrow{font-size:11.5px;letter-spacing:.42em;color:var(--brick);margin-bottom:14px}
+  .headline{
+    font-family:'Noto Serif SC',serif;font-weight:700;letter-spacing:.04em;color:#2A4235;
+    font-size:clamp(21px,2.5vh,32px);
+  }
+  .headline-sub{margin-top:9px;font-size:12.5px;letter-spacing:.08em;color:#7C8A7C;font-weight:300}
+
+  /* ---- 五个竖排词 ---- */
+  .row{
+    margin:auto 0;display:flex;align-items:flex-start;justify-content:center;
+    gap:clamp(26px,6vw,100px);
+  }
+  .word{
+    appearance:none;background:none;border:0;padding:0;cursor:pointer;font-family:inherit;
+    height:var(--colh);
+    display:flex;flex-direction:column;align-items:center;
+    transition:opacity .5s ease,transform .55s ease,filter .5s ease;
+  }
+  .word::before{
+    content:'';width:4px;height:4px;flex:none;border-radius:50%;background:var(--gold);
+    opacity:.75;margin-bottom:calc(var(--cs)*.30);
+    transition:transform .4s ease,opacity .45s ease;
+  }
+  .word:hover::before{transform:scale(1.6);opacity:1}
+  .word:focus-visible{outline:1px solid var(--gold);outline-offset:12px}
+  .word.dim{opacity:0;transform:translateY(-18px) scale(.94);filter:blur(3px)}
+  .word.active::before,.word.active .place{opacity:0}
+  body.open .word{pointer-events:none}
+
+  .stack{
+    flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;align-items:center;
+    gap:calc(var(--cs)*.06);
+  }
+  .ch{
+    display:block;width:var(--cs);height:var(--chh);color:var(--green);
+    transform-origin:50% 50%;
+    transition:transform 880ms cubic-bezier(.22,.86,.24,1),color .35s ease;
+    will-change:transform;
+  }
+  .ch svg{display:block;width:100%;height:100%;overflow:visible}
+  .word:hover .ch{color:#14382A}
+  .word.active .ch{color:#183C2C}
+  .word .place{
+    margin-top:calc(var(--cs)*.24);font-size:10.5px;letter-spacing:.28em;color:#96A096;
+    transition:opacity .45s ease;
+  }
+  .word.dim .place{opacity:0}
+
+  .foot{
+    display:flex;align-items:center;gap:14px;font-size:11px;letter-spacing:.3em;color:#9AA39A;
+    transition:opacity .45s ease;
+  }
+  .foot i{display:block;width:34px;height:1px;background:var(--line)}
+  body.open .foot{opacity:0}
+
+  /* ---- 展开后的收起提示（下三分之一） ---- */
+  .open-hint{
+    position:fixed;left:0;right:0;bottom:8.5vh;z-index:26;text-align:center;
+    font-size:11px;letter-spacing:.3em;color:#A6AFA6;
+    opacity:0;transform:translateY(10px);pointer-events:none;
+    transition:opacity .5s ease,transform .5s ease;
+  }
+  body.open .open-hint{opacity:1;transform:none;transition-delay:.95s}
+
+  /* ---- 折线「闪电」连线（在字后面） ---- */
+  .bolt{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:var(--bolt-opacity)}
+  .bolt polyline{
+    fill:none;stroke:#1F4D38;stroke-width:1.1;stroke-dasharray:7 6;stroke-linecap:round;
+    opacity:0;transition:opacity .55s ease;
+  }
+  body.open .bolt polyline{opacity:1;transition-delay:.95s}
+
+  /* ================= 屏幕中间三分之一：水墨 + 信纸 ================= */
+  .band{
+    position:fixed;left:0;right:0;top:calc((100vh - var(--band-h)) / 2);height:var(--band-h);
+    overflow:hidden;pointer-events:none;z-index:30;
+  }
+  body.guide .band::after{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    border-top:1px dashed rgba(139,58,46,.45);border-bottom:1px dashed rgba(139,58,46,.45);
+  }
+
+  /* ---- 墨色在水中化开 ---- */
+  .mist{position:absolute;inset:0;opacity:0}
+  .mist i{
+    position:absolute;border-radius:50%;filter:blur(26px);
+    background:radial-gradient(ellipse closest-side at 50% 50%,
+      rgba(32,48,40,.34), rgba(32,48,40,.14) 46%, rgba(32,48,40,0) 100%);
+  }
+  body.open .mist{animation:mistWash 1750ms cubic-bezier(.3,.74,.3,1) forwards}
+  @keyframes mistWash{
+    0%{opacity:0;transform:scale(.94)}
+    18%{opacity:1;transform:scale(1)}
+    100%{opacity:0;transform:scale(1.26)}
+  }
+
+  /* ---- 湖面涟漪 ---- */
+  .ripples{position:absolute;inset:0}
+  .ripple{
+    position:absolute;left:var(--x);top:var(--y);width:var(--s);height:var(--s);
+    margin-left:calc(var(--s) / -2);margin-top:calc(var(--s) / -2);
+    transform:scaleY(var(--sq,1));
+  }
+  .ripple i{
+    position:absolute;inset:0;display:block;border-style:solid;
+    border-color:rgba(22,36,30,.62);border-width:var(--bw);opacity:0;
+    transform:rotate(var(--rot)) scale(.06);
+    filter:blur(.3px);
+  }
+  .ripple i:nth-child(2){border-color:rgba(22,36,30,.44);border-width:calc(var(--bw) * .70)}
+  .ripple i:nth-child(3){border-color:rgba(22,36,30,.28);border-width:calc(var(--bw) * .48)}
+  .ripple i:nth-child(4){border-color:rgba(22,36,30,.16);border-width:calc(var(--bw) * .30)}
+  .ripple b{
+    position:absolute;left:31%;top:31%;right:31%;bottom:31%;border-radius:50%;opacity:0;
+    background:radial-gradient(circle at 48% 46%, rgba(22,36,30,.50), rgba(22,36,30,.16) 52%, rgba(22,36,30,0) 80%);
+    filter:blur(9px);
+  }
+  body.open .ripple i{animation:ring var(--d) cubic-bezier(.16,.74,.24,1) var(--delay) forwards}
+  body.open .ripple i:nth-child(2){animation-delay:calc(var(--delay) + 80ms)}
+  body.open .ripple i:nth-child(3){animation-delay:calc(var(--delay) + 165ms)}
+  body.open .ripple i:nth-child(4){animation-delay:calc(var(--delay) + 255ms)}
+  body.open .ripple b{animation:blot calc(var(--d) * .8) cubic-bezier(.2,.7,.3,1) var(--delay) forwards}
+  @keyframes ring{
+    0%{transform:rotate(var(--rot)) scale(.06);opacity:0}
+    12%{opacity:.9}
+    56%{opacity:.28}
+    100%{transform:rotate(var(--rot)) scale(1);opacity:0}
+  }
+  @keyframes blot{
+    0%{opacity:0;transform:scale(.2)}
+    22%{opacity:.95;transform:scale(.9)}
+    100%{opacity:0;transform:scale(1.35)}
+  }
+
+  /* ---- 信纸资料（左端让出 --rail-w 通道，供左上角放大字列通行） ---- */
+  .sheet-wrap{
+    position:absolute;inset:0;padding:0 clamp(14px,4vw,76px) 0 var(--rail-w);
+    opacity:0;filter:blur(10px);transform:scale(.986);pointer-events:none;
+    transition:opacity 720ms cubic-bezier(.3,.8,.3,1),
+               filter 720ms cubic-bezier(.3,.8,.3,1),
+               transform 720ms cubic-bezier(.3,.8,.3,1);
+  }
+  body.open .sheet-wrap{
+    opacity:1;filter:blur(0);transform:none;
+    transition-duration:1080ms;transition-delay:470ms;
+  }
+  body.open .sheet{pointer-events:auto}
+
+  .sheet{
+    position:relative;height:100%;overflow:hidden;border-radius:2px;
+    display:flex;align-items:stretch;
+    padding:clamp(13px,2.2vh,25px) clamp(16px,2.6vw,40px);
+    color:var(--sheet-ink);
+    background-color:var(--sheet);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.19'/%3E%3C/svg%3E"),
+      repeating-linear-gradient(to bottom,
+        rgba(166,58,46,0) 0 31px, var(--rule) 31px 32.2px);
+    background-blend-mode:multiply,normal;
+    box-shadow:0 26px 50px -28px rgba(44,34,20,.55), inset 0 1px 0 rgba(255,255,255,.4);
+  }
+  .sheet::after{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(180deg, rgba(255,255,255,.32), rgba(255,255,255,0) 30%),
+               radial-gradient(120% 120% at 0% 100%, rgba(150,110,60,.13), rgba(150,110,60,0) 55%);
+  }
+
+  /* 左侧竖排地名 */
+  .sheet-rail{
+    flex:0 0 auto;display:flex;flex-direction:column;justify-content:space-between;align-items:center;
+    gap:12px;overflow:hidden;
+    padding:2px clamp(12px,1.8vw,26px) 2px 0;border-right:1px dashed rgba(122,94,58,.4);
+    opacity:0;transform:translateY(10px);
+    transition:opacity .7s ease,transform .7s ease;
+  }
+  .rail-place{
+    writing-mode:vertical-rl;text-orientation:upright;white-space:nowrap;
+    font-family:'Noto Serif SC',serif;font-size:clamp(12px,1.5vh,15px);
+    letter-spacing:.22em;color:#6B563C;
+  }
+  .rail-mark{font-size:9.5px;letter-spacing:.28em;color:#A08C66;writing-mode:vertical-rl}
+
+  .sheet-body{
+    flex:1 1 auto;min-width:0;display:flex;flex-direction:column;justify-content:center;
+    gap:clamp(5px,1vh,11px);
+    padding-left:clamp(16px,2.2vw,34px);border-left:1px solid rgba(166,58,46,.30);
+  }
+  .sheet-body > *{opacity:0;transform:translateY(10px);transition:opacity .7s ease,transform .7s ease}
+  .sb-kicker{font-size:10.5px;letter-spacing:.34em;color:#A9503F;font-weight:500}
+  .sb-title{
+    font-family:'Noto Serif SC',serif;font-weight:700;letter-spacing:.04em;color:#3E3222;
+    font-size:clamp(18px,2.5vh,29px);line-height:1.35;
+  }
+  .sb-note{font-size:clamp(11.5px,1.5vh,13.5px);line-height:1.95;color:#6E5A41;max-width:74ch}
+  .sb-lines{display:flex;flex-direction:column;gap:11px;margin-top:2px}
+  .sb-lines i{display:block;height:1px;background:linear-gradient(90deg,rgba(122,94,58,.38),rgba(122,94,58,.10) 68%,rgba(122,94,58,0))}
+  .sb-lines i:nth-child(2){width:87%}
+  .sb-lines i:nth-child(3){width:63%}
+
+  .sheet-close{
+    position:absolute;top:8px;right:10px;appearance:none;border:0;background:none;cursor:pointer;
+    font-family:inherit;font-size:11px;letter-spacing:.24em;color:#9C8663;padding:7px 10px;border-radius:3px;
+    opacity:0;transition:opacity .6s ease,color .2s ease,background .2s ease;z-index:2;
+  }
+  .sheet-close:hover{color:var(--brick);background:rgba(166,58,46,.08)}
+
+  body.open .sheet-body > *:nth-child(1){transition-delay:.78s}
+  body.open .sheet-body > *:nth-child(2){transition-delay:.88s}
+  body.open .sheet-body > *:nth-child(3){transition-delay:1s}
+  body.open .sheet-body > *:nth-child(4){transition-delay:1.12s}
+  body.open .sheet-rail{opacity:1;transform:none;transition-delay:.82s}
+  body.open .sheet-close{opacity:1;transition-delay:1.1s}
+  body.open .sheet-body > *{opacity:1;transform:none}
+
+  /* ================= 参考线开关 / 定义 ================= */
+  .guide-toggle{
+    position:fixed;right:16px;bottom:14px;z-index:60;display:flex;align-items:center;gap:7px;
+    font-size:10.5px;letter-spacing:.14em;color:#9AA39A;cursor:pointer;user-select:none;
+  }
+  .guide-toggle input{accent-color:var(--brick);width:13px;height:13px}
+  .svg-defs{position:absolute;width:0;height:0;overflow:hidden}
+  body.noanim .ch{transition:none !important}
+
+  @media (max-height:660px){
+    .headline{font-size:18px}
+    .headline-sub{display:none}
+    .sb-note{display:none}
+    .open-hint{display:none}
+  }
+  @media (max-width:640px){
+    :root{--rail-vw:15}
+    .row{gap:18px}
+    .word .place{font-size:9px;letter-spacing:.16em}
+    .sheet-rail{display:none}
+    .sheet-body{padding-left:0;border-left:0}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .ch{transition-duration:.01ms}
+    body.open .sheet-wrap{transition-duration:.01ms}
+  }
+</style>
+</head>
+<body data-page-node-id="e7YAAABsQkO2N0TV9FCVDh">
+
+<div class="stage" data-page-node-id="ubLLJdl4fZIKPF8T055jQC">
+  <header class="head" id="head" data-page-node-id="R5i5iolRroaxAXZLhhO3CJ">
+    <div class="eyebrow" data-page-node-id="e0vJhX8LISppsvyKksLwJt">FIVE CAMPUSES · 三校区 五校园</div>
+    <h1 class="headline" data-page-node-id="6IahhGixKH71x6tTlLjmAa">三校区 · 五校园，一所中大</h1>
+    <p class="headline-sub" data-page-node-id="sbPTLS3cEsvl8lOTUhCTVR">轻触任一校名，看它如何落在这方信纸上。</p>
+  </header>
+
+  <div class="row" id="row" data-page-node-id="rwBZOm5nbvhWss9MxD5d6Y"></div>
+
+  <div class="foot" data-page-node-id="7Ml46X0PRad2xlXowjtUzO"><i data-page-node-id="kr4xOSCgE3tIH9k9I8cY4h"></i>点触校名 · 展开资料</div>
+</div>
+
+<svg class="bolt" id="bolt" aria-hidden="true" data-page-node-id="GIGJw4U09t00RjoIbmDPHq">
+  <polyline id="boltLine" points="" data-page-node-id="JBHbO6ZNNat9mYHQAbLQDN"></polyline>
+</svg>
+
+<div class="open-hint" data-page-node-id="6NcC6vz0Fhpy1p7Ai9vxiS">按 Esc 或点击空白处 · 收起资料</div>
+
+<!-- ===== 屏幕横向中间三分之一：水墨涟漪 → 信纸资料 ===== -->
+<div class="band" id="band" data-page-node-id="n4jOajrLugLe8Zu6dqAFGG">
+  <div class="mist" id="mist" data-page-node-id="eCxHUwsU0wKhfhWDjRUPZR"></div>
+  <div class="ripples" id="ripples" data-page-node-id="NybkX0CmoxZwA5WHqqzCu4"></div>
+  <div class="sheet-wrap" id="sheetWrap" data-page-node-id="LgFMdDGX0pM2xjbF8KcBYP">
+    <article class="sheet" id="sheet" data-page-node-id="yJWeoZ5ASTrMbzQypmc9he">
+      <div class="sheet-rail" data-page-node-id="Z2j3L05FVVv7GG4v7KwMVC">
+        <div class="rail-place" id="railPlace" data-page-node-id="zQXb5WLeq9tPdtgsAM9PWW">广州 · 海珠区</div>
+        <div class="rail-mark" data-page-node-id="TLDxixP7H5wFEJn7LhsfH3">SYSU</div>
+      </div>
+      <div class="sheet-body" data-page-node-id="bUmPYQrUrS1ACnhDHFc1jp">
+        <div class="sb-kicker" id="sbKicker" data-page-node-id="BQ90uDjBn7G6tRccCsebC5">CAMPUS 01</div>
+        <h3 class="sb-title" id="sbTitle" data-page-node-id="sZeY7Vs1ECDBWmEFnXxI3P">南校园 · 详细资料</h3>
+        <p class="sb-note" id="sbNote" data-page-node-id="peBLYceloKOCb3PYqAzUaS">内容位置：校区简介 · 院系与专业 · 地标与生活 · 交通与周边。</p>
+        <div class="sb-lines" data-page-node-id="ZqBWWOZSWVMBVsXlUxDBNh"><i data-page-node-id="6RSHOnzXrrtlfdCcnaOPEA"></i><i data-page-node-id="6crDitam1xZ7VY2bUknNqH"></i><i data-page-node-id="6pfINE8iVsiYrSkaafJz9N"></i></div>
+      </div>
+      <button class="sheet-close" id="sheetClose" type="button" data-page-node-id="mYVT4X3Tvf0SJ2cH1SYg13">收起 ✕</button>
+    </article>
+  </div>
+</div>
+
+<label class="guide-toggle" data-page-node-id="qkDmiSMi8gZCQN4HTkymum">
+  <input type="checkbox" id="guideChk" data-page-node-id="F0VFsNyNUwq0HgxuueHGpx">
+  <span data-page-node-id="OUKgev6AQ1rXCwZdQEItAY">显示中间三分之一参考线</span>
+</label>
+
+<svg class="svg-defs" aria-hidden="true" focusable="false" data-page-node-id="rE69qDqa9JXOn9odztE91P">
+  <defs data-page-node-id="bPY3QMKzQKyn2cHDgvstYH">
+    <filter id="sealInk" x="-14%" y="-14%" width="128%" height="128%" color-interpolation-filters="sRGB" data-page-node-id="H7UQ45hHNae1XoAjELPLur">
+      <feTurbulence type="fractalNoise" baseFrequency="0.020" numOctaves="2" seed="9" result="n" data-page-node-id="k5CDIAIs9tnlVMqfLMJpKk"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="4.5" xChannelSelector="R" yChannelSelector="G" data-page-node-id="8kaHGvXChP0FmgYUUf6ohE"/>
+    </filter>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  'use strict';
+  var NS = 'http://www.w3.org/2000/svg';
+
+  /* ===== 仿篆书字形：简体结构 + 篆书笔意（等粗、圆头、竖长、圆转）
+     每字为一组 path，stroke-width 56 / viewBox 1000，笔画数据由 seal_glyphs.py 生成 ===== */
+  var GLYPHS = {"南":["M 368.0 210.8 Q 500.0 184.0 632.0 210.8","M 500.0 99.5 C 491.0 339.8 497.0 589.0 500.0 842.6","M 326.0 851.6 C 323.0 606.8 323.0 455.5 326.0 391.4 Q 327.2 350.5 357.2 348.7 L 642.8 348.7 Q 672.8 350.5 674.0 391.4 C 677.0 544.5 677.0 686.9 674.0 807.0 Q 672.2 848.9 633.2 856.0","M 471.2 397.7 C 450.8 428.8 431.6 462.6 411.2 507.1","M 528.8 397.7 C 549.2 428.8 568.4 462.6 588.8 507.1","M 378.8 581.9 Q 500.0 562.3 621.2 581.9","M 389.0 715.4 Q 500.0 697.6 611.0 715.4"],"东":["M 236.0 219.7 Q 500.0 188.5 764.0 219.7","M 611.0 99.5 C 512.0 197.4 398.0 308.6 320.0 411.0 Q 285.2 457.3 323.0 471.5 L 644.0 471.5","M 542.0 295.3 C 533.6 455.5 530.0 606.8 530.0 762.6 Q 530.0 842.6 464.0 853.3","M 500.0 526.7 C 440.0 615.7 368.0 731.4 284.0 856.0","M 560.0 589.0 C 620.0 660.2 680.0 727.0 740.0 784.8"],"北":["M 332.0 99.5 C 328.4 366.5 328.4 633.5 335.0 891.6","M 227.0 391.4 Q 293.0 371.8 369.2 377.2","M 227.0 856.0 Q 290.0 783.0 357.2 694.0","M 500.0 313.1 Q 450.8 411.0 407.0 517.8","M 452.0 108.4 C 440.0 322.0 431.6 553.4 431.6 731.4 Q 431.6 845.3 500.0 854.2 L 528.8 854.2 C 564.8 854.2 579.2 834.6 576.8 758.1"],"园":["M 287.0 144.0 C 280.4 366.5 280.4 633.5 287.0 864.9","M 287.0 148.4 Q 500.0 121.8 713.0 148.4 C 722.0 366.5 722.0 660.2 713.0 856.0","M 287.0 869.4 Q 500.0 891.6 713.0 869.4","M 404.0 279.3 Q 500.0 261.5 596.0 279.3","M 338.0 424.3 Q 500.0 406.6 674.0 424.3","M 497.0 455.5 C 446.0 581.9 398.0 713.6 353.0 827.5","M 581.0 455.5 C 578.0 573.0 575.6 678.0 580.4 742.1 Q 587.6 824.0 644.0 825.7 L 658.4 825.7 Q 689.6 827.5 684.8 752.8"],"深":["M 320.0 144.0 Q 266.0 206.3 245.0 277.5","M 270.8 375.4 Q 230.0 428.8 218.0 500.0","M 215.0 767.0 Q 260.0 724.3 327.2 658.4","M 389.0 320.2 Q 381.2 264.1 419.0 264.1 L 698.0 264.1 Q 732.8 268.6 725.6 332.7","M 486.8 344.2 C 465.2 393.2 446.0 430.6 425.0 480.4","M 527.0 344.2 C 549.2 393.2 569.6 430.6 591.2 480.4","M 368.0 560.5 Q 530.0 540.9 693.2 560.5","M 539.0 411.0 C 532.4 571.2 532.4 731.4 536.0 882.7","M 527.0 589.0 C 465.2 695.8 392.0 786.6 318.8 856.0","M 552.8 589.0 C 614.0 678.0 675.2 759.9 729.2 822.2"],"圳":["M 233.0 391.4 Q 351.2 371.8 482.0 386.1","M 359.0 99.5 C 354.8 366.5 354.8 633.5 359.6 873.8","M 227.0 827.5 Q 357.2 758.1 500.0 665.5","M 594.8 144.0 C 582.8 375.4 552.8 606.8 527.0 842.6","M 672.8 121.8 C 666.2 366.5 662.6 606.8 659.6 818.6","M 750.8 95.0 C 743.6 366.5 740.0 606.8 737.0 845.3"],"珠":["M 227.0 250.8 Q 344.0 233.0 464.0 250.8","M 227.0 451.1 Q 350.0 433.2 477.2 451.1","M 227.0 688.7 Q 354.8 647.7 482.0 575.6","M 341.0 95.0 C 336.8 304.2 336.8 500.0 340.4 695.8","M 531.2 104.0 C 501.2 197.4 473.6 288.2 446.0 380.7","M 425.0 335.4 Q 561.2 317.6 698.0 335.4","M 449.0 549.0 Q 587.0 531.2 725.0 549.0","M 581.0 95.0 C 576.8 357.6 576.8 615.7 581.0 878.2","M 563.0 589.0 C 512.0 695.8 452.0 784.8 384.8 851.6","M 599.0 589.0 C 651.2 660.2 699.2 724.3 740.0 777.7"],"海":["M 320.0 144.0 Q 266.0 206.3 245.0 277.5","M 270.8 375.4 Q 230.0 428.8 218.0 500.0","M 215.0 767.0 Q 260.0 724.3 327.2 658.4","M 576.8 92.4 C 528.8 179.6 473.6 270.4 426.8 366.5","M 438.8 277.5 Q 600.8 256.1 767.0 277.5","M 461.0 403.9 C 456.2 553.4 456.2 704.7 461.0 791.9 Q 462.8 836.4 503.0 836.4 L 656.0 836.4","M 447.2 398.5 Q 578.0 379.0 710.0 398.5 C 716.0 553.4 716.0 704.7 712.4 816.8 Q 710.0 856.0 659.6 856.0","M 528.8 448.4 C 512.0 500.0 503.6 528.5 500.0 555.2","M 585.2 466.2 C 568.4 517.8 560.0 546.3 556.4 573.0","M 407.0 646.9 Q 597.2 627.3 783.2 646.9"],"校":["M 218.0 322.0 Q 339.2 302.4 464.0 322.0","M 336.8 95.0 C 332.0 339.8 332.0 606.8 335.6 891.6","M 323.0 446.6 C 288.8 571.2 254.0 678.0 221.0 767.0","M 360.8 459.9 C 387.2 526.7 416.0 589.0 441.2 644.2","M 519.2 108.4 Q 534.8 170.7 546.8 229.4","M 425.0 299.8 Q 590.0 282.0 755.0 299.8","M 503.0 368.3 C 476.0 437.7 452.0 500.0 425.0 566.8","M 582.8 377.2 C 609.2 421.7 633.2 457.3 659.6 492.9","M 606.8 428.8 C 549.2 606.8 495.2 749.2 440.0 857.8","M 531.2 448.4 C 608.0 606.8 680.0 731.4 746.0 822.2"],"区":["M 260.0 210.8 Q 500.0 184.0 764.0 210.8","M 260.0 197.4 C 254.0 428.8 254.0 660.2 260.0 838.2","M 260.0 847.1 Q 500.0 870.2 764.0 847.1","M 690.8 313.1 C 609.2 473.3 513.2 642.4 426.8 807.0","M 347.0 322.0 C 453.2 473.3 573.2 660.2 707.0 795.5"]};
+
+  var CAMPUSES = [
+    {name:'南校园',  short:'广州', place:'广州 · 海珠区', code:'CAMPUS 01'},
+    {name:'东校园',  short:'广州', place:'广州 · 大学城', code:'CAMPUS 02'},
+    {name:'北校园',  short:'广州', place:'广州 · 中山医', code:'CAMPUS 03'},
+    {name:'深圳校区',short:'深圳', place:'深圳 · 光明',   code:'CAMPUS 04'},
+    {name:'珠海校区',short:'珠海', place:'珠海 · 唐家湾', code:'CAMPUS 05'}
+  ];
+
+  var row      = document.getElementById('row');
+  var band     = document.getElementById('band');
+  var ripples  = document.getElementById('ripples');
+  var mist     = document.getElementById('mist');
+  var boltLine = document.getElementById('boltLine');
+  var guideChk = document.getElementById('guideChk');
+
+  function cssNum(name, fallback){
+    var v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
+    return isNaN(v) ? fallback : v;
+  }
+
+  /* ---------- 生成一个字的 SVG ---------- */
+  function glyphSVG(ch){
+    var svg = document.createElementNS(NS,'svg');
+    svg.setAttribute('viewBox','170 20 660 960');
+    svg.setAttribute('aria-hidden','true');
+    var g = document.createElementNS(NS,'g');
+    g.setAttribute('filter','url(#sealInk)');
+    (GLYPHS[ch] || []).forEach(function(d){
+      var p = document.createElementNS(NS,'path');
+      p.setAttribute('d', d);
+      p.setAttribute('fill','none');
+      p.setAttribute('stroke','currentColor');
+      p.setAttribute('stroke-width','60');
+      p.setAttribute('stroke-linecap','round');
+      p.setAttribute('stroke-linejoin','round');
+      g.appendChild(p);
+    });
+    svg.appendChild(g);
+    return svg;
+  }
+
+  /* ---------- 构建五个竖排词 ---------- */
+  CAMPUSES.forEach(function(c, i){
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'word';
+    btn.setAttribute('aria-label', c.name + ' 详细资料');
+
+    var stack = document.createElement('span');
+    stack.className = 'stack';
+    c.name.split('').forEach(function(ch){
+      var sp = document.createElement('span');
+      sp.className = 'ch';
+      sp.appendChild(glyphSVG(ch));
+      stack.appendChild(sp);
+    });
+    btn.appendChild(stack);
+
+    var pl = document.createElement('span');
+    pl.className = 'place';
+    pl.textContent = c.short;
+    btn.appendChild(pl);
+
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      openCampus(i);
+    });
+    row.appendChild(btn);
+  });
+
+  /* ---------- 状态 ---------- */
+  var openIdx = -1, charEls = [], openedAt = 0;
+
+  /* 计算并应用「左上角折线」目标位置（字列在信纸让出的通道内居中） */
+  function layoutChars(chars, rects, baseDelay){
+    var k  = cssNum('--zoom', 1.8);
+    var w0 = rects[0].width, h0 = rects[0].height;
+    var rw = w0 * k, rh = h0 * k;
+    var railW = cssNum('--rail-vw', 21) / 100 * window.innerWidth;
+    var X0 = Math.max(14, railW / 2 - rw / 2);
+    var Y0 = Math.max(12, window.innerHeight * 0.026);
+    var stepY = rh * 0.92;
+    var pts = [];
+    chars.forEach(function(el, i){
+      var off  = (i % 2 ? 0.74 : -0.12) * rw;     /* 左右交错 → 闪电折线 */
+      var tilt = (i % 2 ? 3 : -3);
+      var cx = X0 + off + rw / 2;
+      var cy = Y0 + i * stepY + rh / 2;
+      var r  = rects[i];
+      var dx = cx - (r.left + r.width / 2);
+      var dy = cy - (r.top + r.height / 2);
+      el.style.transitionDelay = (baseDelay + i * 70) + 'ms';
+      el.style.transform = 'translate(' + dx.toFixed(1) + 'px,' + dy.toFixed(1) + 'px) scale(' + k + ') rotate(' + tilt + 'deg)';
+      pts.push([cx, cy]);
+    });
+    return pts;
+  }
+
+  /* 折线「闪电」连线：用 0..100 相对坐标，随窗口自适应 */
+  function drawBolt(pts){
+    if (!pts.length){ boltLine.setAttribute('points',''); return; }
+    boltLine.setAttribute('points', pts.map(function(p){
+      return p[0].toFixed(1) + ',' + p[1].toFixed(1);
+    }).join(' '));
+  }
+
+  function openCampus(i){
+    if (openIdx === i) return;
+    if (openIdx >= 0) resetInstant();
+
+    var btn   = row.children[i];
+    var chars = Array.prototype.slice.call(btn.querySelectorAll('.ch'));
+    var rects = chars.map(function(el){ return el.getBoundingClientRect(); });
+
+    drawBolt(layoutChars(chars, rects, 110));
+
+    Array.prototype.forEach.call(row.children, function(w, j){
+      if (j !== i) w.classList.add('dim');
+    });
+    btn.classList.add('active');
+
+    fillSheet(CAMPUSES[i]);
+    document.body.classList.add('open');
+    spawnInk();
+
+    charEls = chars;
+    openIdx = i;
+    openedAt = Date.now();
+  }
+
+  function closeCampus(){
+    if (openIdx < 0) return;
+    document.body.classList.remove('open');
+    charEls.forEach(function(el, i){
+      el.style.transitionDelay = (i * 45) + 'ms';
+      el.style.transform = '';
+    });
+    drawBolt([]);
+    Array.prototype.forEach.call(row.children, function(w){
+      w.classList.remove('dim');
+      w.classList.remove('active');
+    });
+    clearInk();
+    openIdx = -1;
+    charEls = [];
+  }
+
+  /* 立刻复位（切换校园时不播动画） */
+  function resetInstant(){
+    document.body.classList.add('noanim');
+    document.body.classList.remove('open');
+    charEls.forEach(function(el){ el.style.transitionDelay = '0ms'; el.style.transform = ''; });
+    drawBolt([]);
+    Array.prototype.forEach.call(row.children, function(w){
+      w.classList.remove('dim');
+      w.classList.remove('active');
+    });
+    clearInk();
+    openIdx = -1;
+    charEls = [];
+    void document.body.offsetHeight;
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ document.body.classList.remove('noanim'); });
+    });
+  }
+
+  /* ---------- 窗口尺寸变化后重算 ---------- */
+  var rzTimer = null;
+  window.addEventListener('resize', function(){
+    if (openIdx < 0) return;
+    clearTimeout(rzTimer);
+    rzTimer = setTimeout(function(){
+      var chars = charEls;
+      if (!chars.length) return;
+      document.body.classList.add('noanim');
+      chars.forEach(function(el){ el.style.transitionDelay = '0ms'; el.style.transform = ''; });
+      void document.body.offsetHeight;
+      var rects = chars.map(function(el){ return el.getBoundingClientRect(); });
+      drawBolt(layoutChars(chars, rects, 0));
+      requestAnimationFrame(function(){
+        requestAnimationFrame(function(){ document.body.classList.remove('noanim'); });
+      });
+    }, 180);
+  });
+
+  /* ---------- 信纸内容 ---------- */
+  function fillSheet(c){
+    document.getElementById('railPlace').textContent = c.place;
+    document.getElementById('sbKicker').textContent  = c.code + ' · 中山大学';
+    document.getElementById('sbTitle').textContent   = c.name + ' · 详细资料（待补充）';
+    document.getElementById('sbNote').innerHTML =
+      '内容位置：校区简介 · 院系与专业 · 地标与生活 · 交通与周边。<br>' +
+      '你把这所校园的资料给我，我按这方信纸的版式排进来。';
+  }
+
+  /* ---------- 水墨：墨色化开 + 大小涟漪 ---------- */
+  function spawnInk(){
+    var W = band.clientWidth, H = band.clientHeight;
+    var R = function(a,b){ return a + Math.random() * (b - a); };
+
+    ripples.innerHTML = '';
+    mist.innerHTML = '';
+
+    /* 墨色在纸面化开（很淡，只为衬出水感，全部收在三分之一之内） */
+    for (var m = 0; m < 4; m++){
+      var blob = document.createElement('i');
+      var s = R(0.14, 0.36) * H;
+      blob.style.cssText =
+        'left:' + (R(0.05, 0.88) * W).toFixed(0) + 'px;' +
+        'top:' + (R(0.06, 0.44) * H).toFixed(0) + 'px;' +
+        'width:' + s.toFixed(0) + 'px;height:' + (s * R(0.85, 1.2)).toFixed(0) + 'px;' +
+        'opacity:' + R(0.34, 0.70).toFixed(2);
+      mist.appendChild(blob);
+    }
+
+    /* 涟漪：6 个中等 + 4 个零星小雨点，大大小小 */
+    var list = [];
+    for (var i = 0; i < 6; i++){
+      list.push({ s:R(84,220), x:R(0.07,0.93), y:R(0.20,0.80), d:R(780,1240), delay:R(0,270) });
+    }
+    for (var j = 0; j < 4; j++){
+      list.push({ s:R(13,40),  x:R(0.05,0.95), y:R(0.14,0.86), d:R(400,680),  delay:R(60,560) });
+    }
+    list.sort(function(a,b){ return a.delay - b.delay; });
+
+    list.forEach(function(it){
+      var el = document.createElement('div');
+      el.className = 'ripple';
+      el.style.setProperty('--x', (it.x * W).toFixed(1) + 'px');
+      el.style.setProperty('--y', (it.y * H).toFixed(1) + 'px');
+      el.style.setProperty('--s', it.s.toFixed(1) + 'px');
+      el.style.setProperty('--d', it.d.toFixed(0) + 'ms');
+      el.style.setProperty('--delay', it.delay.toFixed(0) + 'ms');
+      el.style.setProperty('--bw', R(1.1, 2.6).toFixed(2) + 'px');
+      el.style.setProperty('--sq', R(0.72, 0.94).toFixed(2));   /* 透视：略压扁成椭圆 */
+
+      for (var r = 0; r < 4; r++){
+        var ring = document.createElement('i');
+        var a = [R(44,56),R(44,56),R(44,56),R(44,56)].map(function(v){ return v.toFixed(1) + '%'; }).join(' ');
+        var b = [R(44,56),R(44,56),R(44,56),R(44,56)].map(function(v){ return v.toFixed(1) + '%'; }).join(' ');
+        ring.style.borderRadius = a + ' / ' + b;     /* 手绘感的不规则圆 */
+        ring.style.setProperty('--rot', R(-30, 30).toFixed(1) + 'deg');
+        el.appendChild(ring);
+      }
+      var blot = document.createElement('b');
+      var ba = [R(42,58),R(42,58),R(42,58),R(42,58)].map(function(v){ return v.toFixed(1) + '%'; }).join(' ');
+      var bb = [R(42,58),R(42,58),R(42,58),R(42,58)].map(function(v){ return v.toFixed(1) + '%'; }).join(' ');
+      blot.style.borderRadius = ba + ' / ' + bb;
+      el.appendChild(blot);
+      ripples.appendChild(el);
+    });
+  }
+
+  function clearInk(){
+    ripples.innerHTML = '';
+    mist.innerHTML = '';
+  }
+
+  /* ---------- 关闭方式 ---------- */
+  document.getElementById('sheetClose').addEventListener('click', function(e){
+    e.stopPropagation();
+    closeCampus();
+  });
+  document.addEventListener('click', function(e){
+    if (openIdx < 0) return;
+    if (Date.now() - openedAt < 260) return;
+    if (e.target.closest && (e.target.closest('.sheet') || e.target.closest('.word') || e.target.closest('.guide-toggle'))) return;
+    closeCampus();
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeCampus();
+  });
+
+  /* ---------- 参考线 ---------- */
+  guideChk.addEventListener('change', function(){
+    document.body.classList.toggle('guide', guideChk.checked);
+  });
+
+  /* ---------- 调试钩子（仅当网址带参数时生效，方便演示/截图） ----------
+     ?demo=0           自动展开第 1 个校园（0~4）
+     ?delay=120        延迟多少毫秒后展开
+     ?closeat=2000     展开后多少毫秒自动收起
+     ?guide=1          显示中间三分之一参考线
+  ------------------------------------------------------------------ */
+  (function(){
+    var qp = new URLSearchParams(location.search);
+    if (qp.get('guide') === '1'){
+      guideChk.checked = true;
+      document.body.classList.add('guide');
+    }
+    if (qp.has('demo')){
+      var di = parseInt(qp.get('demo'), 10) || 0;
+      var dl = parseInt(qp.get('delay') || '0', 10);
+      setTimeout(function(){ openCampus(di); }, dl);
+    }
+    if (qp.has('closeat')){
+      setTimeout(function(){ closeCampus(); }, parseInt(qp.get('closeat'), 10) || 2000);
+    }
+  })();
+})();
+</script>
+
+</body>
+</html>

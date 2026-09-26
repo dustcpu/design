@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>五校园 · 中大招宣概念稿</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 L29 10.5 L16 18 L3 10.5 Z' fill='%23C9A24B'/%3E%3Cpath d='M3 10.5 L16 18 L16 29 L3 21.5 Z' fill='%238B3A2E'/%3E%3Cpath d='M29 10.5 L16 18 L16 29 L29 21.5 Z' fill='%231E3D2C'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+  :root{
+    --paper:#F5F1E8;
+    --ink:#1F4D38;
+    --green:#2F5D46;
+    --brick:#8B3A2E;
+    --gold:#C9A24B;
+    --line:#D8CFBC;
+    --cs:clamp(36px,5.45vh,62px);
+    --chh:calc(var(--cs) * 1.4545);
+    --colh:calc(var(--chh) * 5 + var(--cs) * 0.66);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:'Noto Sans SC',system-ui,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+    line-height:1.7;overflow:hidden;-webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(255,255,255,.7), rgba(255,255,255,0) 62%),
+      radial-gradient(70% 50% at 50% 112%, rgba(120,110,80,.10), rgba(120,110,80,0) 70%);
+  }
+
+  /* ================= 主舞台（仅静置态） ================= */
+  .stage{
+    position:relative;z-index:2;height:100vh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:6.2vh 4vw 3vh;
+  }
+  .head{text-align:center}
+  .eyebrow{font-size:11.5px;letter-spacing:.42em;color:var(--brick);margin-bottom:14px}
+  .headline{
+    font-family:'Noto Serif SC',serif;font-weight:700;letter-spacing:.04em;color:#2A4235;
+    font-size:clamp(21px,2.5vh,32px);
+  }
+  .headline-sub{margin-top:9px;font-size:12.5px;letter-spacing:.08em;color:#7C8A7C;font-weight:300}
+
+  .row{
+    margin:auto 0;display:flex;align-items:flex-start;justify-content:center;
+    gap:clamp(26px,6vw,100px);
+  }
+  .word{
+    appearance:none;background:none;border:0;padding:0;font-family:inherit;
+    height:var(--colh);
+    display:flex;flex-direction:column;align-items:center;
+  }
+  .word::before{
+    content:'';width:4px;height:4px;flex:none;border-radius:50%;background:var(--gold);
+    opacity:.75;margin-bottom:calc(var(--cs)*.30);
+  }
+  .word:hover::before{transform:scale(1.6);opacity:1}
+  .word:focus-visible{outline:1px solid var(--gold);outline-offset:12px}
+
+  .stack{
+    flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;align-items:center;
+    gap:calc(var(--cs)*.06);
+  }
+  .ch{
+    display:block;width:var(--cs);height:var(--chh);color:var(--green);
+  }
+  .ch svg{display:block;width:100%;height:100%;overflow:visible}
+  .word:hover .ch{color:#14382A}
+  .word .place{
+    margin-top:calc(var(--cs)*.24);font-size:10.5px;letter-spacing:.28em;color:#96A096;
+  }
+
+  .foot{
+    display:flex;align-items:center;gap:14px;font-size:11px;letter-spacing:.3em;color:#9AA39A;
+  }
+  .foot i{display:block;width:34px;height:1px;background:var(--line)}
+
+  .svg-defs{position:absolute;width:0;height:0;overflow:hidden}
+
+  @media (max-height:660px){
+    .headline{font-size:18px}
+    .headline-sub{display:none}
+  }
+  @media (max-width:640px){
+    .row{gap:18px}
+    .word .place{font-size:9px;letter-spacing:.16em}
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <header class="head" id="head">
+    <div class="eyebrow">FIVE CAMPUSES · 三校区 五校园</div>
+    <h1 class="headline">三校区 · 五校园，一所中大</h1>
+    <p class="headline-sub">广州 · 深圳 · 珠海</p>
+  </header>
+
+  <div class="row" id="row"></div>
+
+  <div class="foot"><i></i>SUN YAT-SEN UNIVERSITY · 1924</div>
+</div>
+
+<svg class="svg-defs" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="sealInk" x="-14%" y="-14%" width="128%" height="128%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.020" numOctaves="2" seed="9" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="4.5" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  'use strict';
+  var NS = 'http://www.w3.org/2000/svg';
+
+__GLYPH_IMAGES_LINE__
+
+  var CAMPUSES = [
+    {name:'南校园',  short:'广州', place:'广州 · 海珠区', code:'CAMPUS 01'},
+    {name:'东校园',  short:'广州', place:'广州 · 大学城', code:'CAMPUS 02'},
+    {name:'北校园',  short:'广州', place:'广州 · 中山医', code:'CAMPUS 03'},
+    {name:'深圳校区',short:'深圳', place:'深圳 · 光明',   code:'CAMPUS 04'},
+    {name:'珠海校区',short:'珠海', place:'珠海 · 唐家湾', code:'CAMPUS 05'}
+  ];
+
+  var row = document.getElementById('row');
+
+  function glyphSVG(ch){
+    var svg = document.createElementNS(NS,'svg');
+    svg.setAttribute('viewBox','170 20 660 960');
+    svg.setAttribute('aria-hidden','true');
+    var g = document.createElementNS(NS,'g');
+    g.setAttribute('filter','url(#sealInk)');
+    var href = GLYPH_IMAGES[ch];
+    if(href){
+      var img = document.createElementNS(NS,'image');
+      img.setAttribute('x', '170');
+      img.setAttribute('y', '20');
+      img.setAttribute('width', '660');
+      img.setAttribute('height', '960');
+      img.setAttribute('preserveAspectRatio','xMidYMid meet');
+      img.setAttributeNS('http://www.w3.org/1999/xlink','href', href);
+      g.appendChild(img);
+    }
+    svg.appendChild(g);
+    return svg;
+  }
+
+  /* ---------- 构建五个竖排词（纯静置态展示） ---------- */
+  CAMPUSES.forEach(function(c){
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'word';
+    btn.setAttribute('aria-label', c.name);
+
+    var stack = document.createElement('span');
+    stack.className = 'stack';
+    c.name.split('').forEach(function(ch){
+      var sp = document.createElement('span');
+      sp.className = 'ch';
+      sp.appendChild(glyphSVG(ch));
+      stack.appendChild(sp);
+    });
+    btn.appendChild(stack);
+
+    var pl = document.createElement('span');
+    pl.className = 'place';
+    pl.textContent = c.short;
+    btn.appendChild(pl);
+
+    row.appendChild(btn);
+  });
+})();
+</script>
+
+</body>
+</html>

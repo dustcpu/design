@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="xd1rXE2b1ImYghSDro4Hmr">
+<head data-page-node-id="qT5YWD0CRHzAVOzkXdkCHb">
+<meta charset="UTF-8" data-page-node-id="MBnVJHiaYDwGzcm7Q96Jr7">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="CmkEOhptBKFbIDO3z3d2OL">
+<title>五校园 · 3D 建筑建模交互原型 · 康乐园招宣概念稿</title>
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+<style>
+  :root{
+    --paper:#F5F1E8;
+    --ink:#1F4D38;
+    --green:#2F5D46;
+    --brick:#8B3A2E;
+    --gold:#C9A24B;
+    --sky:#3D6B99;
+    --line:#D8CFBC;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Noto Sans SC',system-ui,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .serif{font-family:'Noto Serif SC','Songti SC','SimSun',serif}
+  img{display:block;max-width:100%}
+
+  /* ===== 页头 ===== */
+  .page-head{max-width:1240px;margin:0 auto;padding:72px 40px 0}
+  .eyebrow{font-size:13px;letter-spacing:.3em;color:var(--brick);margin-bottom:14px;font-weight:700}
+  .page-head h1{
+    font-family:'Noto Serif SC','Songti SC','SimSun',serif;
+    font-size:clamp(28px,3.6vw,44px);font-weight:700;line-height:1.3;
+  }
+  .page-head .lead{margin-top:14px;max-width:560px;color:#3d5244;font-weight:300}
+  .hint{
+    margin-top:20px;display:inline-flex;align-items:center;gap:8px;
+    font-size:12.5px;color:#6b7d6f;border:1px solid var(--line);
+    border-radius:999px;padding:6px 16px;background:rgba(255,255,255,.45);
+  }
+  .hint .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+
+  /* ===== 五校园长廊 ===== */
+  .stage{max-width:1240px;margin:0 auto;padding:56px 40px 120px}
+  .campus-row{display:grid;grid-template-columns:repeat(5,1fr);gap:24px}
+  .bldg{
+    cursor:pointer;border-radius:6px;padding:18px 14px 16px;
+    border:1px solid transparent;transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s,border-color .35s,opacity .5s;
+    position:relative;
+  }
+  .bldg:hover{transform:translateY(-8px);border-color:var(--line);
+    box-shadow:0 24px 48px -24px rgba(30,61,44,.4);background:rgba(255,255,255,.5)}
+  .bldg.dim{opacity:.25;pointer-events:none}
+  .bldg img{width:100%;aspect-ratio:1;object-fit:contain;border-radius:4px;transition:filter .35s}
+  .bldg:hover img{filter:drop-shadow(0 14px 18px rgba(30,61,44,.25))}
+  .bldg .place{margin-top:14px;font-size:12px;letter-spacing:.2em;color:var(--brick);font-weight:700}
+  .bldg h4{margin-top:3px;font-family:'Noto Serif SC','Songti SC','SimSun',serif;font-size:17px;font-weight:700}
+  .bldg p{margin-top:5px;font-size:13px;color:#4a5f50;font-weight:300}
+  .bldg .tap{
+    position:absolute;top:12px;right:12px;font-size:11px;letter-spacing:.12em;
+    color:var(--paper);background:var(--brick);border-radius:999px;padding:3px 10px;
+    opacity:0;transform:translateY(-4px);transition:all .3s;pointer-events:none;
+  }
+  .bldg:hover .tap{opacity:1;transform:none}
+
+  /* ===== 详情浮层 ===== */
+  .overlay{
+    position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;
+    background:rgba(38,52,44,0);backdrop-filter:blur(0px);
+    transition:background .6s ease,backdrop-filter .6s ease;
+    pointer-events:none;visibility:hidden;
+  }
+  .overlay.show{
+    background:rgba(38,52,44,.55);backdrop-filter:blur(10px);
+    pointer-events:auto;visibility:visible;
+  }
+  .detail{
+    width:min(1160px,92vw);
+    display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;
+    background:var(--paper);border-radius:10px;
+    box-shadow:0 60px 120px -40px rgba(15,30,22,.6);
+    padding:48px 52px;
+    position:relative;
+    transform:translateY(24px);opacity:0;
+    transition:transform .55s cubic-bezier(.2,.7,.3,1),opacity .55s ease;
+  }
+  .overlay.show .detail{transform:none;opacity:1}
+  .view3d{
+    width:100%;aspect-ratio:1;max-height:520px;position:relative;
+    cursor:grab;border-radius:8px;
+    background:radial-gradient(ellipse at 50% 78%,rgba(31,77,56,.10),transparent 62%);
+    touch-action:none;user-select:none;-webkit-user-select:none;
+  }
+  .view3d:active{cursor:grabbing}
+  .view3d canvas{display:block;width:100%!important;height:100%!important}
+  .view3d .rot-hint{
+    position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+    font-size:11.5px;letter-spacing:.14em;color:#8a968b;pointer-events:none;
+    transition:opacity .6s;white-space:nowrap;
+  }
+  .view3d.dragged .rot-hint{opacity:0}
+
+  .detail-right{position:relative}
+  .d-close{
+    position:absolute;top:-30px;right:0;
+    width:34px;height:34px;border-radius:50%;border:1px solid var(--line);
+    background:var(--paper);color:var(--ink);font-size:16px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;line-height:1;
+    transition:all .25s;z-index:5;
+  }
+  .d-close:hover{background:var(--brick);color:var(--paper);border-color:var(--brick);transform:rotate(90deg)}
+  .d-place{font-size:12px;letter-spacing:.25em;color:var(--brick);font-weight:700}
+  .d-name{
+    margin-top:8px;font-family:'Noto Serif SC','Songti SC','SimSun',serif;
+    font-size:clamp(30px,3.4vw,46px);font-weight:900;line-height:1.2;
+  }
+  .d-en{margin-top:4px;font-size:12px;letter-spacing:.32em;color:var(--gold);font-weight:700}
+  .d-desc{margin-top:20px;color:#3d5244;font-weight:300;font-size:15px}
+  .d-tags{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+  .d-tags span{
+    font-size:12.5px;color:var(--green);border:1px solid var(--line);
+    border-radius:999px;padding:5px 14px;background:rgba(255,255,255,.6);
+  }
+  .d-stats{margin-top:28px;display:flex;gap:36px;border-top:1px solid var(--line);padding-top:22px}
+  .d-stats b{display:block;font-family:'Noto Serif SC','Songti SC','SimSun',serif;
+    font-size:24px;color:var(--brick);font-weight:900;line-height:1.2}
+  .d-stats i{font-style:normal;font-size:12px;color:#6b7d6f}
+
+  .d-anim{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s cubic-bezier(.2,.7,.3,1)}
+  .overlay.show .d-anim{opacity:1;transform:none}
+  .overlay.show .d-place{transition-delay:.5s}
+  .overlay.show .d-name{transition-delay:.57s}
+  .overlay.show .d-en{transition-delay:.64s}
+  .overlay.show .d-desc{transition-delay:.71s}
+  .overlay.show .d-tags{transition-delay:.79s}
+  .overlay.show .d-stats{transition-delay:.87s}
+
+  @media (max-width:900px){
+    .campus-row{grid-template-columns:repeat(2,1fr)}
+    .detail{grid-template-columns:1fr;gap:20px;padding:36px 26px;max-height:88vh;overflow:auto}
+    .view3d{max-height:320px}
+    .d-close{top:-42px}
+  }
+</style>
+</head>
+<body data-page-node-id="MxIuRxyBvXK90POQJ0tAW7">
+
+<header class="page-head" data-page-node-id="Scy1TPhMfSvZwCK2oFZlbE">
+  <div class="eyebrow" data-page-node-id="KpoP60pWCRgMT05q2QSJ29">FIVE CAMPUSES · 3D INTERACTION PROTOTYPE</div>
+  <h1 data-page-node-id="NQGdcFXmdPGKN1TFlD8bTw">三校区 · 五校园，一所中大</h1>
+  <p class="lead" data-page-node-id="wPr2P9PKcp8redyW8I9j5R">从珠江之畔到伶仃洋岸，五座校园各有性格。点击任意建筑——建筑本体缓缓转动、放大，落到你面前，可以用鼠标拖着转一圈。</p>
+  <div class="hint" data-page-node-id="x2urkGBdpHWff1QAAEt6FH"><span class="dot" data-page-node-id="D6f2YoNgEHXToTIMmHg82U"></span>点击建筑进入 · 拖动旋转 360° · 滚轮缩放 · Esc 返回</div>
+</header>
+
+<section class="stage" data-page-node-id="joDBsc3OdzMIJr9VMGA1Jg">
+  <div class="campus-row" id="campusRow" data-page-node-id="AdcWkuuOL3LdccpBVvLFEZ">
+    <div class="bldg" data-key="nan" data-page-node-id="steNoyRuvFjo8QojI7q97x">
+      <span class="tap" data-page-node-id="zFAFfTu1ISIL7w0dMFFk6j">3D 模型</span>
+      <img src="sysu-admission-site-v1.0/assets/campus-nan.png" alt="南校园怀士堂" data-page-node-id="UN1MQiXMIyDefwKyUStbnk">
+      <div class="place" data-page-node-id="244JmJTKez0GMbQYGTR0x1">广州 · 南校园</div>
+      <h4 data-page-node-id="eo2tYMqyvvc3Lk2RViXP6Y">怀士堂</h4>
+      <p data-page-node-id="NrMa2tmj2xDWt1xoGtyBLJ">红砖绿瓦，百年礼堂。</p>
+    </div>
+    <div class="bldg" data-key="bei" data-page-node-id="GFvqlGNWoxgIWDWT7bPaGg">
+      <span class="tap" data-page-node-id="2wbH24GuiGaDfbRC5gHFbD">3D 模型</span>
+      <img src="sysu-admission-site-v1.0/assets/campus-bei.png" alt="北校园中山医红楼" data-page-node-id="0by9WZE7m7Bm49eIESPjPk">
+      <div class="place" data-page-node-id="J1jQPTpZnOw0yypx2z3pLt">广州 · 北校园</div>
+      <h4 data-page-node-id="lLvwR5xkoCb6P2WiE5AalC">中山医红楼</h4>
+      <p data-page-node-id="G6GepuJKK93qF5gVYaqQiy">救人救国救世。</p>
+    </div>
+    <div class="bldg" data-key="dong" data-page-node-id="Tmwt3erITI1o2eEusQeBPe">
+      <span class="tap" data-page-node-id="3BJ3Hv9zVANENP6drLIGJu">3D 模型</span>
+      <img src="sysu-admission-site-v1.0/assets/campus-dong.png" alt="东校园图书馆" data-page-node-id="GauNBB2F1U5M1VouDFHN7Z">
+      <div class="place" data-page-node-id="qaGvJ7ibgz3BIzA2AFdGx3">广州 · 东校园</div>
+      <h4 data-page-node-id="NirgHAEveGqdma8aoF9JHG">图书馆</h4>
+      <p data-page-node-id="APLVYVi9UfIvGbHrGNZOjB">大学城的知识之门。</p>
+    </div>
+    <div class="bldg" data-key="shenzhen" data-page-node-id="ms24MK9Qr0DWuySuDmbPkP">
+      <span class="tap" data-page-node-id="sKgRvAZX0PKy8fu2TeE3Ys">3D 模型</span>
+      <img src="sysu-admission-site-v1.0/assets/campus-shenzhen.png" alt="深圳校区图书馆" data-page-node-id="rBR5Fh3OVrPMTv8FeY6ezf">
+      <div class="place" data-page-node-id="aADH8Dsg749BjGJVcd3GIY">深圳校区</div>
+      <h4 data-page-node-id="9A8KZ6KHOgVUXCmd3DYwus">图书馆</h4>
+      <p data-page-node-id="Onr59aBsAu5Kt2PxB0HzqB">山海之间，红砖新章。</p>
+    </div>
+    <div class="bldg" data-key="zhuhai" data-page-node-id="8WZrxHVKYCgRGEpUxWFHQ7">
+      <span class="tap" data-page-node-id="fziRG1twZcEjMFlwIEEBUL">3D 模型</span>
+      <img src="sysu-admission-site-v1.0/assets/campus-zhuhai.png" alt="珠海校区天琴中心" data-page-node-id="b3j1RNe1YGRsIUT9OsD5kM">
+      <div class="place" data-page-node-id="nD9cgCNFRUu2oCEWhPFmWE">珠海校区</div>
+      <h4 data-page-node-id="urTqVfQ2dEIWGDDjEpkdwE">天琴中心</h4>
+      <p data-page-node-id="IlWALunytB5vwnqZvDkFqO">仰望星空，聆听引力波。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 详情浮层 ===== -->
+<div class="overlay" id="overlay" data-page-node-id="FxtuHaCOdTlCzknTQKvwAN">
+  <div class="detail" role="dialog" aria-modal="true" data-page-node-id="Zx3BERHc2NmANIU7FdI7i8">
+    <button class="d-close" id="closeBtn" title="返回长廊" data-page-node-id="nn3lFzZZKcAbRNnnC2PQii">✕</button>
+    <div class="view3d" id="view3d" data-page-node-id="U1LjdM7TIGFQ8U6ZZX6WxA">
+      <div class="rot-hint" data-page-node-id="O9Hkoc9Kf6ozcNJCl41gdW">⟲ 拖动旋转 · 滚轮缩放</div>
+    </div>
+    <div class="detail-right" data-page-node-id="935f53qBARkTWXfzz252WC">
+      <div class="d-place d-anim" id="dPlace" data-page-node-id="35YWwPPawOkrWcj87Q7EBw"></div>
+      <h2 class="d-name d-anim" id="dName" data-page-node-id="DFrnjD3tNhtGln4w6arFas"></h2>
+      <div class="d-en d-anim" id="dEn" data-page-node-id="2Yh0qJegUyXoygdVzvuSig"></div>
+      <p class="d-desc d-anim" id="dDesc" data-page-node-id="j3KAHCeLFJdD3bgfWahL3I"></p>
+      <div class="d-tags d-anim" id="dTags" data-page-node-id="KX7gnqNTPUrfXdxojvfkwl"></div>
+      <div class="d-stats d-anim" id="dStats" data-page-node-id="K0voHaFZ1DOoHIcXmDaYSg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ================= 五校园详细资料（示意文案，可替换） ================= */
+  var DATA = {
+    nan:{place:'广州 · 南校园（康乐园）',name:'怀士堂',en:'SWASEY HALL, KANGLEYUAN',
+      desc:'怀士堂坐落于康乐园中轴线的南端，1917年落成，红砖绿瓦、尖顶拱窗，是中大最具辨识度的精神图腾。1923年，孙中山先生曾在此对学生演讲，留下「立志要做大事，不可要做大官」的嘱托。堂前大草坪开阔如毯，是每年毕业合影与开学典礼的所在。',
+      tags:['百年中轴线','人文社科重镇','大草坪与惺亭','陈寅恪故居'],
+      stats:[['1917','礼堂落成'],['1923','中山先生演讲'],['No.1','中大地标']]},
+    bei:{place:'广州 · 北校园',name:'中山医红楼',en:'ZSOM RED BUILDING',
+      desc:'北校园是中山医科的根脉所在，前身可溯至1866年的博济医学堂，孙中山先生曾在此习医。「救人救国救世」的誓言刻在红楼的廊柱之间，中山医百余年薪火相传，是国内历史最悠久的医学教育重镇之一。',
+      tags:['医科精英教育','中山医品牌','百年医脉','附属医院集群'],
+      stats:[['1866','医学堂始创'],['158年+','医脉传承'],['7+','附属医院']]},
+    dong:{place:'广州 · 东校园（大学城）',name:'图书馆',en:'LIBRARY, EAST CAMPUS',
+      desc:'东校园位于广州大学城，2004年启用。图书馆横卧于校园中轴，如一本摊开的书，是整座校园的知识之门。这里汇聚了工科与社会科学的主要院系，年轻、开放、节奏明快，是中大面向新世纪的生长极。',
+      tags:['大学城核心','工科与社科','现代书院制','摊开的书'],
+      stats:[['2004','校区启用'],['70万㎡','校区面积'],['24h','自习空间']]},
+    shenzhen:{place:'深圳校区（光明）',name:'图书馆',en:'LIBRARY, SHENZHEN CAMPUS',
+      desc:'深圳校区2020年在光明区全面启用，依山而建、红砖新章。校区聚焦新医科与新工科，紧贴粤港澳大湾区的产业前沿，把实验室建在创新链上。山海之间的这座城市校园，是中大声学与深圳速度的合奏。',
+      tags:['新工科新医科','湾区产业前沿','依山而建','创新街区'],
+      stats:[['2020','全面启用'],['500万㎡','规划体量'],['10+','入驻学院']]},
+    zhuhai:{place:'珠海校区（唐家湾）',name:'天琴中心',en:'TIANQIN CENTER, ZHUHAI',
+      desc:'珠海校区面朝伶仃洋，背靠凤凰山，是国内公认的最美海滨校园之一。天琴计划在此仰望星空——空间引力波探测的大科学装置正一步步从图纸走向轨道。海洋科学与基础学科在咸咸的海风里生长。',
+      tags:['天琴计划','海洋科学','最美海滨校园','大科学装置'],
+      stats:[['2000','校区启用'],['3.5km','海岸线'],['LISA','国际合作']]}
+  };
+
+  /* ================================================================
+     THREE.JS 场景：五座建筑的等距体量模型
+     ================================================================ */
+  var PAL = {
+    brick:0x8B3A2E, brickDark:0x74301F, roofG:0x2F5D46, roofDk:0x44544A,
+    cream:0xEDE3CE, white:0xF3EEE2, glass:0x9FB8C8, gold:0xC9A24B,
+    win:0x3E4A44, ground:0xE7DFCC, leaf:0x3E6B4F, trunk:0x6E5138
+  };
+  var MAT = {};
+  Object.keys(PAL).forEach(function(k){
+    MAT[k] = new THREE.MeshStandardMaterial({color:PAL[k], roughness:.88, metalness:.05});
+  });
+  MAT.glass = new THREE.MeshStandardMaterial({color:PAL.glass, roughness:.25, metalness:.35,
+    transparent:true, opacity:.72});
+
+  function mat(color){ return new THREE.MeshStandardMaterial({color:color,roughness:.88,metalness:.05}); }
+
+  function box(g,w,h,d,m,x,y,z,ry){
+    var mesh = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), m);
+    mesh.position.set(x||0,y||0,z||0); if(ry) mesh.rotation.y = ry;
+    mesh.castShadow = mesh.receiveShadow = true;
+    g.add(mesh); return mesh;
+  }
+  /* 双坡屋顶：三角棱柱，ridge 沿 z 轴 */
+  function gable(g,w,h,d,m,x,y,z,ry){
+    var s = new THREE.Shape();
+    s.moveTo(-w/2,0); s.lineTo(w/2,0); s.lineTo(0,h); s.closePath();
+    var geo = new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:false});
+    geo.translate(0,0,-d/2);
+    var mesh = new THREE.Mesh(geo,m);
+    mesh.position.set(x||0,y||0,z||0); if(ry) mesh.rotation.y = ry;
+    mesh.castShadow = mesh.receiveShadow = true;
+    g.add(mesh); return mesh;
+  }
+  function tree(g,x,z,s){
+    s = s||1;
+    box(g,.28*s,1*s,.28*s,MAT.trunk,x,.5*s,z);
+    var c = new THREE.Mesh(new THREE.ConeGeometry(.9*s,1.8*s,7),MAT.leaf);
+    c.position.set(x,1.9*s,z); c.castShadow = true; g.add(c);
+  }
+
+  /* ---------- 南校园 · 怀士堂：红砖主体 + 绿瓦双坡顶 + 门廊立柱 ---------- */
+  function buildNan(){
+    var g = new THREE.Group();
+    box(g,10,3.6,6,MAT.brick,0,1.8,0);                     // 主体
+    gable(g,10.8,2.1,6.6,MAT.roofG,0,3.6,0);               // 绿瓦大屋顶
+    box(g,10.9,.22,6.4,MAT.cream,0,3.68,0);                // 檐口白带
+    // 正面门廊：四柱 + 山花
+    [-1.8,-0.6,0.6,1.8].forEach(function(x){ box(g,.42,2.5,.42,MAT.white,x,1.25,3.35); });
+    box(g,4.8,.28,1.5,MAT.white,0,2.62,3.35);
+    gable(g,5.0,.9,1.5,MAT.cream,0,2.76,3.35);
+    box(g,1.3,1.9,.18,MAT.win,0,0.95,3.28);                // 大门
+    // 两侧翼楼
+    [-6.6,6.6].forEach(function(x){
+      box(g,3,2.7,4.8,MAT.brick,x,1.35,0);
+      gable(g,3.4,1.2,5.2,MAT.roofG,x,2.7,0);
+      box(g,.7,.9,.14,MAT.white,x,1.6,2.45);
+    });
+    box(g,5,.35,1.6,MAT.cream,0,.18,4.1);                  // 台阶
+    tree(g,-5.5,4.6,1.15); tree(g,5.8,4.4,.9); tree(g,-8,3.5,.8);
+    return g;
+  }
+
+  /* ---------- 北校园 · 中山医红楼：长排红楼 + 横向翼楼 + 白窗框 ---------- */
+  function buildBei(){
+    var g = new THREE.Group();
+    box(g,12,3.2,4.5,MAT.brick,0,1.6,0);                   // 长主楼
+    gable(g,12.6,1.7,5,MAT.roofDk,0,3.2,0);
+    box(g,12.4,.2,4.9,MAT.cream,0,3.28,0);
+    // 横向两翼
+    [-3.4,3.4].forEach(function(x){
+      box(g,3.6,3,4.4,MAT.brick,x,1.5,4.1);
+      gable(g,3.9,1.2,4.8,MAT.roofDk,x,3.0,4.1,Math.PI/2);
+    });
+    // 白色窗框（两排）
+    for(var i=0;i<9;i++){
+      var wx = -4.8+i*1.2;
+      box(g,.62,1.0,.12,MAT.white,wx,2.05,2.3);
+      box(g,.62,1.0,.12,MAT.white,wx,0.95,2.3);
+    }
+    // 中央山花 + 旗杆感装饰
+    gable(g,2.6,.8,.4,MAT.cream,0,3.4,2.55);
+    box(g,.3,.5,.3,MAT.gold,0,4.55,0);
+    [-5.4,5.4].forEach(function(x){ box(g,.55,1.1,.55,MAT.brickDark,x,4.3,0); }); // 屋顶烟囱
+    tree(g,7,3.6,1.1); tree(g,-7.2,3.2,.95); tree(g,-2,5.6,.8);
+    return g;
+  }
+
+  /* ---------- 东校园 · 图书馆：摊开的书 + 横带长窗 + 玻璃中庭 ---------- */
+  function buildDong(){
+    var g = new THREE.Group();
+    box(g,16,.5,8.5,MAT.cream,0,.25,0);                    // 大台基
+    box(g,14,.42,7.4,MAT.white,0,.68,0);
+    box(g,13.6,4.4,6,MAT.cream,0,3.1,0);                   // 书形主体
+    gable(g,13.9,1.0,6.3,MAT.white,0,5.3,0);               // 屋脊如书脊
+    box(g,13.8,.28,6.2,MAT.win,0,2.2,3.05);                // 横带长窗（正面）
+    box(g,13.8,.28,6.2,MAT.win,0,3.4,3.05);
+    box(g,13.8,.28,6.2,MAT.win,0,4.6,3.05);
+    box(g,13.8,.28,.15,MAT.win,0,2.8,-3.05);               // 背面横窗
+    box(g,13.8,.28,.15,MAT.win,0,4.0,-3.05);
+    box(g,4.2,3.4,.5,MAT.glass,0,2.9,3.15);                // 中央玻璃中庭
+    box(g,4.6,.35,.9,MAT.white,0,4.78,3.2);
+    box(g,2.4,.9,.3,MAT.gold,0,5.0,3.3);                   // 金色馆名
+    box(g,3,1.1,2.6,MAT.gray||mat(0xB8B0A0),3.5,6.05,-1);  // 屋顶设备间
+    tree(g,-8.6,3.6,1.2); tree(g,8.8,3.4,1.0); tree(g,-7,5,.85);
+    return g;
+  }
+
+  /* ---------- 深圳校区 · 图书馆：红砖退台叠层 + 竖向遮阳片 ---------- */
+  function buildShenzhen(){
+    var g = new THREE.Group();
+    box(g,12,1.3,7.5,MAT.brick,0,.65,0);                   // 底层
+    box(g,12.4,.28,7.9,MAT.white,0,1.42,0);
+    box(g,10.6,2.7,6.3,MAT.brick,1.0,2.95,0);              // 中层（前移退台）
+    box(g,11.0,.28,6.7,MAT.white,1.0,4.42,0);
+    box(g,7.6,2.3,5.2,MAT.brickDark,-.6,5.75,0);           // 顶层（反向退台）
+    box(g,8.0,.28,5.6,MAT.white,-.6,7.0,0);
+    box(g,8.6,1.3,.16,MAT.glass,1.0,2.9,3.25);             // 玻璃幕墙带
+    box(g,6.4,1.1,.16,MAT.glass,-.6,5.6,2.65);
+    for(var i=0;i<9;i++){                                   // 竖向遮阳鳍片
+      box(g,.22,2.2,.22,MAT.white,-2.8+i*.7,5.8,2.7);
+    }
+    box(g,1.8,.55,.3,MAT.gold,1.0,4.72,3.35);              // 金色馆名
+    box(g,14,.4,9,MAT.cream,0,.2,0);                       // 前广场
+    tree(g,-7.4,3.8,1.15); tree(g,7.6,3.6,.9); tree(g,-6.4,5.2,.8);
+    return g;
+  }
+
+  /* ---------- 珠海校区 · 天琴中心：观测塔 + 圆顶 + 引力波金环 ---------- */
+  function buildZhuhai(){
+    var g = new THREE.Group();
+    box(g,9,2.4,4.2,MAT.cream,-1.8,1.2,0);                 // L 形裙楼
+    box(g,3.6,2.4,5.4,MAT.cream,2.9,1.2,.6);
+    box(g,9.2,.25,4.4,MAT.white,-1.8,2.5,0);
+    box(g,3.8,.25,5.6,MAT.white,2.9,2.5,.6);
+    box(g,3.2,6.8,3.2,MAT.white,.4,5.9,-.4);               // 中央观测塔
+    box(g,3.4,.3,.16,MAT.win,.4,4.6,1.25);                 // 塔身窗带
+    box(g,3.4,.3,.16,MAT.win,.4,6.4,1.25);
+    box(g,3.6,.3,3.6,MAT.gold,.4,9.45,-.4);                // 塔顶金冠
+    var domeBase = box(g,2.6,1.4,2.6,MAT.white,4.9,3.2,3.0);
+    var dome = new THREE.Mesh(new THREE.SphereGeometry(1.5,24,18),MAT.glass);
+    dome.position.set(4.9,4.6,3.0); dome.castShadow = true; g.add(dome);
+    box(g,.12,1.6,.12,MAT.white,4.9,6.6,3.0);              // 天线
+    box(g,.9,.3,.9,MAT.gold,4.9,7.4,3.0);
+    // 天琴引力波轨道环（会慢速自转）
+    var ring = new THREE.Mesh(new THREE.TorusGeometry(5.6,.14,14,72),
+      new THREE.MeshStandardMaterial({color:PAL.gold,roughness:.35,metalness:.6}));
+    ring.position.set(0,5.4,0); ring.rotation.x = Math.PI/2.35; ring.castShadow = true;
+    g.add(ring);
+    var sat = new THREE.Mesh(new THREE.SphereGeometry(.3,14,10),MAT.gold);
+    sat.position.set(5.6,5.4,0); g.add(sat);
+    g.userData.ring = ring; g.userData.sat = sat;
+    tree(g,-6.6,3.2,1.1); tree(g,-4.4,4.8,.85); tree(g,7.4,.5,1.0);
+    return g;
+  }
+
+  var BUILDERS = {nan:buildNan, bei:buildBei, dong:buildDong, shenzhen:buildShenzhen, zhuhai:buildZhuhai};
+
+  /* ================= 渲染器与交互（懒加载） ================= */
+  var container = document.getElementById('view3d');
+  var renderer, scene, camera, models = {}, activeKey = null;
+  var theta = 0.7, phi = 1.05, dist = 17, targetY = 3.0;
+  var entranceT0 = 0, rafId = null, lastDrag = 0;
+  var dragging = false, px = 0, py = 0;
+
+  function initThree(){
+    renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    container.insertBefore(renderer.domElement, container.firstChild);
+
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(38,1,.1,200);
+
+    var hemi = new THREE.HemisphereLight(0xFFF7E8,0x8A968B,.85);
+    scene.add(hemi);
+    var sun = new THREE.DirectionalLight(0xFFFFFF,1.35);
+    sun.position.set(10,16,8); sun.castShadow = true;
+    sun.shadow.mapSize.set(1024,1024);
+    sun.shadow.camera.left = sun.shadow.camera.bottom = -14;
+    sun.shadow.camera.right = sun.shadow.camera.top = 14;
+    scene.add(sun);
+    var fill = new THREE.DirectionalLight(0xDCE8E0,.35);
+    fill.position.set(-8,6,-6); scene.add(fill);
+
+    var ground = new THREE.Mesh(new THREE.CircleGeometry(15,48),MAT.ground);
+    ground.rotation.x = -Math.PI/2; ground.receiveShadow = true;
+    scene.add(ground);
+
+    Object.keys(BUILDERS).forEach(function(k){
+      var m = BUILDERS[k]();
+      m.visible = false; scene.add(m); models[k] = m;
+    });
+
+    bindControls();
+  }
+
+  function bindControls(){
+    container.addEventListener('pointerdown',function(e){
+      dragging = true; px = e.clientX; py = e.clientY;
+      container.setPointerCapture(e.pointerId);
+    });
+    container.addEventListener('pointermove',function(e){
+      if(!dragging) return;
+      theta -= (e.clientX-px)*.006;
+      phi   = Math.max(.25, Math.min(1.35, phi-(e.clientY-py)*.004));
+      px = e.clientX; py = e.clientY;
+      lastDrag = performance.now();
+      container.classList.add('dragged');
+    });
+    container.addEventListener('pointerup',function(){ dragging = false; });
+    container.addEventListener('pointercancel',function(){ dragging = false; });
+    container.addEventListener('wheel',function(e){
+      e.preventDefault();
+      dist = Math.max(9, Math.min(28, dist*(1+e.deltaY*.001)));
+    },{passive:false});
+  }
+
+  function resize(){
+    var w = container.clientWidth, h = container.clientHeight;
+    if(!w||!h) return;
+    renderer.setSize(w,h,false);
+    camera.aspect = w/h; camera.updateProjectionMatrix();
+  }
+
+  function loop(now){
+    rafId = requestAnimationFrame(loop);
+    /* 入场：缩放 0.14→1 + 升起 */
+    var m = models[activeKey];
+    if(m){
+      var t = Math.min(1,(now-entranceT0)/1300);
+      var ease = 1-Math.pow(1-t,3);
+      m.scale.setScalar(.14+.86*ease);
+      m.position.y = -1.6*(1-ease);
+      m.visible = true;
+      /* 缓慢自转：拖动后暂停 2.5s 再恢复 */
+      if(!dragging && now-lastDrag>2500) theta += .0035;
+      /* 专属细节动画 */
+      if(m.userData.ring){
+        m.userData.ring.rotation.z += .004;
+        var a = now*.0006;
+        m.userData.sat.position.set(Math.cos(a)*5.6, 5.4+Math.sin(m.userData.ring.rotation.x)*0,
+          Math.sin(a)*5.6);
+        m.userData.sat.position.y = 5.4 + Math.cos(a)*Math.cos(m.userData.ring.rotation.x)*5.6*.42;
+      }
+    }
+    camera.position.set(
+      dist*Math.sin(phi)*Math.sin(theta),
+      targetY + dist*Math.cos(phi),
+      dist*Math.sin(phi)*Math.cos(theta));
+    camera.lookAt(0,targetY*.75,0);
+    renderer.render(scene,camera);
+  }
+
+  function openView(key){
+    if(!renderer) initThree();
+    if(activeKey && models[activeKey]) models[activeKey].visible = false;
+    activeKey = key;
+    theta = .7; phi = 1.05; dist = 17; lastDrag = 0;
+    container.classList.remove('dragged');
+    entranceT0 = performance.now();
+    resize();
+    if(!rafId) rafId = requestAnimationFrame(loop);
+  }
+
+  /* ================= 浮层流程 ================= */
+  var overlay = document.getElementById('overlay');
+  var currentKey = null;
+
+  function openDetail(card, key){
+    var data = DATA[key];
+    document.querySelectorAll('.bldg').forEach(function(b){
+      if(b!==card) b.classList.add('dim');
+    });
+    document.getElementById('dPlace').textContent = data.place;
+    document.getElementById('dName').textContent  = data.name;
+    document.getElementById('dEn').textContent    = data.en;
+    document.getElementById('dDesc').textContent  = data.desc;
+    document.getElementById('dTags').innerHTML    = data.tags.map(function(t){return '<span>'+t+'</span>';}).join('');
+    document.getElementById('dStats').innerHTML   = data.stats.map(function(s){return '<div><b>'+s[0]+'</b><i>'+s[1]+'</i></div>';}).join('');
+    overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    currentKey = key;
+    requestAnimationFrame(function(){ openView(key); });
+  }
+
+  function closeDetail(){
+    overlay.classList.remove('show');
+    document.body.style.overflow = '';
+    document.querySelectorAll('.bldg').forEach(function(b){ b.classList.remove('dim'); });
+    if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
+    if(activeKey && models[activeKey]) models[activeKey].visible = false;
+    currentKey = null;
+  }
+
+  document.getElementById('campusRow').addEventListener('click',function(e){
+    var card = e.target.closest('.bldg');
+    if(card && !card.classList.contains('dim')) openDetail(card, card.dataset.key);
+  });
+  document.getElementById('closeBtn').addEventListener('click', closeDetail);
+  overlay.addEventListener('click',function(e){ if(e.target===overlay) closeDetail(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&currentKey) closeDetail(); });
+  window.addEventListener('resize',function(){ if(currentKey) resize(); });
+})();
+</script>
+
+</body>
+</html>

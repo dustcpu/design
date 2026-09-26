@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="zdaHZef5B0t7C5BOMJthac">
+<head data-page-node-id="MUJVREeLESrJipQgjCJFbO">
+<meta charset="UTF-8" data-page-node-id="LIrGdPrivm4KEBDjGF3QZ2">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="8oGqRTVfD6fqNegPFc8ady">
+<title>五校园 · 点击交互动画原型 · 康乐园招宣概念稿</title>
+<style>
+  :root{
+    --paper:#F5F1E8;
+    --ink:#1F4D38;
+    --green:#2F5D46;
+    --brick:#8B3A2E;
+    --gold:#C9A24B;
+    --sky:#3D6B99;
+    --line:#D8CFBC;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Noto Sans SC',system-ui,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .serif{font-family:'Noto Serif SC','Songti SC','SimSun',serif}
+  img{display:block;max-width:100%}
+
+  /* ===== 页头 ===== */
+  .page-head{
+    max-width:1240px;margin:0 auto;padding:72px 40px 0;
+  }
+  .eyebrow{font-size:13px;letter-spacing:.3em;color:var(--brick);margin-bottom:14px;font-weight:700}
+  .page-head h1{
+    font-family:'Noto Serif SC','Songti SC','SimSun',serif;
+    font-size:clamp(28px,3.6vw,44px);font-weight:700;line-height:1.3;
+  }
+  .page-head .lead{margin-top:14px;max-width:560px;color:#3d5244;font-weight:300}
+  .hint{
+    margin-top:20px;display:inline-flex;align-items:center;gap:8px;
+    font-size:12.5px;color:#6b7d6f;border:1px solid var(--line);
+    border-radius:999px;padding:6px 16px;background:rgba(255,255,255,.45);
+  }
+  .hint .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+
+  /* ===== 五校园长廊 ===== */
+  .stage{max-width:1240px;margin:0 auto;padding:56px 40px 120px}
+  .campus-row{display:grid;grid-template-columns:repeat(5,1fr);gap:24px}
+  .bldg{
+    cursor:pointer;border-radius:6px;padding:18px 14px 16px;
+    border:1px solid transparent;transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s,border-color .35s,opacity .5s;
+    position:relative;
+  }
+  .bldg:hover{transform:translateY(-8px);border-color:var(--line);
+    box-shadow:0 24px 48px -24px rgba(30,61,44,.4);background:rgba(255,255,255,.5)}
+  .bldg.dim{opacity:.25;pointer-events:none}
+  .bldg img{
+    width:100%;aspect-ratio:1;object-fit:contain;border-radius:4px;
+    transition:filter .35s;
+  }
+  .bldg:hover img{filter:drop-shadow(0 14px 18px rgba(30,61,44,.25))}
+  .bldg .place{margin-top:14px;font-size:12px;letter-spacing:.2em;color:var(--brick);font-weight:700}
+  .bldg h4{margin-top:3px;font-family:'Noto Serif SC','Songti SC','SimSun',serif;font-size:17px;font-weight:700}
+  .bldg p{margin-top:5px;font-size:13px;color:#4a5f50;font-weight:300}
+  .bldg .tap{
+    position:absolute;top:12px;right:12px;font-size:11px;letter-spacing:.12em;
+    color:var(--paper);background:var(--brick);border-radius:999px;padding:3px 10px;
+    opacity:0;transform:translateY(-4px);transition:all .3s;pointer-events:none;
+  }
+  .bldg:hover .tap{opacity:1;transform:none}
+
+  /* ===== 详情浮层 ===== */
+  .overlay{
+    position:fixed;inset:0;z-index:900;display:flex;align-items:center;justify-content:center;
+    background:rgba(38,52,44,0);backdrop-filter:blur(0px);
+    transition:background .6s ease,backdrop-filter .6s ease;
+    pointer-events:none;visibility:hidden;
+  }
+  .overlay.show{
+    background:rgba(38,52,44,.55);backdrop-filter:blur(10px);
+    pointer-events:auto;visibility:visible;
+  }
+  .detail{
+    width:min(1160px,92vw);
+    display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;
+    background:var(--paper);border-radius:10px;
+    box-shadow:0 60px 120px -40px rgba(15,30,22,.6);
+    padding:56px 56px;
+    position:relative;
+    transform:translateY(24px);opacity:0;
+    transition:transform .55s cubic-bezier(.2,.7,.3,1),opacity .55s ease;
+  }
+  .overlay.show .detail{transform:none;opacity:1}
+  .detail-left{
+    display:flex;align-items:center;justify-content:center;
+    min-height:340px;position:relative;
+  }
+  .detail-left::before{
+    /* 地台光晕，建筑落位时的“展台” */
+    content:"";position:absolute;bottom:26px;left:50%;transform:translateX(-50%);
+    width:70%;height:26px;border-radius:50%;
+    background:radial-gradient(ellipse at center,rgba(31,77,56,.28),transparent 70%);
+    opacity:0;transition:opacity .5s ease .15s;
+  }
+  .overlay.show .detail-left::before{opacity:1}
+  .detail-left img{
+    width:min(100%,440px);aspect-ratio:1;object-fit:contain;
+    visibility:hidden; /* 由飞行的克隆体占据，落位后才显形 */
+  }
+  .detail-left.landed img{visibility:visible}
+  .detail-left.landed img{animation:land-pop .5s cubic-bezier(.2,.9,.3,1.2)}
+  @keyframes land-pop{0%{transform:scale(.92)}100%{transform:scale(1)}}
+
+  .detail-right{position:relative}
+  .d-close{
+    position:absolute;top:-34px;right:0;
+    width:34px;height:34px;border-radius:50%;border:1px solid var(--line);
+    background:var(--paper);color:var(--ink);font-size:16px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;line-height:1;
+    transition:all .25s;z-index:5;
+  }
+  .d-close:hover{background:var(--brick);color:var(--paper);border-color:var(--brick);transform:rotate(90deg)}
+  .d-place{font-size:12px;letter-spacing:.25em;color:var(--brick);font-weight:700}
+  .d-name{
+    margin-top:8px;font-family:'Noto Serif SC','Songti SC','SimSun',serif;
+    font-size:clamp(30px,3.4vw,46px);font-weight:900;line-height:1.2;
+  }
+  .d-en{margin-top:4px;font-size:12px;letter-spacing:.32em;color:var(--gold);font-weight:700}
+  .d-desc{margin-top:20px;color:#3d5244;font-weight:300;font-size:15px}
+  .d-tags{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+  .d-tags span{
+    font-size:12.5px;color:var(--green);border:1px solid var(--line);
+    border-radius:999px;padding:5px 14px;background:rgba(255,255,255,.6);
+  }
+  .d-stats{margin-top:28px;display:flex;gap:36px;border-top:1px solid var(--line);padding-top:22px}
+  .d-stats b{display:block;font-family:'Noto Serif SC','Songti SC','SimSun',serif;
+    font-size:24px;color:var(--brick);font-weight:900;line-height:1.2}
+  .d-stats i{font-style:normal;font-size:12px;color:#6b7d6f}
+
+  /* 详情文字入场：逐行上滑 */
+  .d-anim{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s cubic-bezier(.2,.7,.3,1)}
+  .overlay.show .d-anim{opacity:1;transform:none}
+  .overlay.show .d-place{transition-delay:.55s}
+  .overlay.show .d-name{transition-delay:.62s}
+  .overlay.show .d-en{transition-delay:.69s}
+  .overlay.show .d-desc{transition-delay:.76s}
+  .overlay.show .d-tags{transition-delay:.84s}
+  .overlay.show .d-stats{transition-delay:.92s}
+
+  @media (max-width:900px){
+    .campus-row{grid-template-columns:repeat(2,1fr)}
+    .detail{grid-template-columns:1fr;gap:24px;padding:40px 28px;max-height:88vh;overflow:auto}
+    .detail-left{min-height:260px}
+    .d-close{top:-44px}
+  }
+</style>
+</head>
+<body data-page-node-id="uG9097Nn9NCDw7N0DiwPcx">
+
+<header class="page-head" data-page-node-id="8zcEGcbIXyorewWcMupSO1">
+  <div class="eyebrow" data-page-node-id="pEY806FkyXM9LyHsxGHsYY">FIVE CAMPUSES · INTERACTION PROTOTYPE</div>
+  <h1 data-page-node-id="B3OVifnljcFJX8tsF1rqOd">三校区 · 五校园，一所中大</h1>
+  <p class="lead" data-page-node-id="7lRgeVaHgBSUU8SNDwCLIr">从珠江之畔到伶仃洋岸，五座校园各有性格。点击任意建筑——它会转身、放大，落到你面前。</p>
+  <div class="hint" data-page-node-id="cxNfSZW1NfImkw1AvovbYS"><span class="dot" data-page-node-id="Xz7i3tEnuvrKOCmyoBYGLr"></span>点击下方任一建筑查看动画 · 按 Esc 或点关闭返回</div>
+</header>
+
+<section class="stage" data-page-node-id="h2brqvrEYOHzAd2v60hkE2">
+  <div class="campus-row" id="campusRow" data-page-node-id="PScy2cFBanD0I18P3mUMHC">
+    <div class="bldg" data-key="nan" data-page-node-id="u4RnDVrDqrID9w9UA0EVoU">
+      <span class="tap" data-page-node-id="CCUuyufuprvYOigyGIJkpo">点击进入</span>
+      <img src="sysu-admission-site-v1.0/assets/campus-nan.png" alt="南校园怀士堂" data-page-node-id="LxHwucxJll672sGv7NDRJC">
+      <div class="place" data-page-node-id="rp8sUl4niGQEt4QZbhheAC">广州 · 南校园</div>
+      <h4 data-page-node-id="5CThXukLFHQdRjFHR06epc">怀士堂</h4>
+      <p data-page-node-id="uzfU8hkVt52GBcIJ15BbRF">红砖绿瓦，百年礼堂。</p>
+    </div>
+    <div class="bldg" data-key="bei" data-page-node-id="hf8QUgOuf4SLswmTPfHPP9">
+      <span class="tap" data-page-node-id="EDaFe7oCF8X4OgO7gLFALq">点击进入</span>
+      <img src="sysu-admission-site-v1.0/assets/campus-bei.png" alt="北校园中山医红楼" data-page-node-id="HmJzoqIV5zlk1U6diIzJK0">
+      <div class="place" data-page-node-id="m5CQ7JWrWVwpfTFZXBehpQ">广州 · 北校园</div>
+      <h4 data-page-node-id="T3pATDDwgai8Qa3tWSKiZz">中山医红楼</h4>
+      <p data-page-node-id="gbgV2rXfytHSA9EluVfo9v">救人救国救世。</p>
+    </div>
+    <div class="bldg" data-key="dong" data-page-node-id="C35zQ9law2gLucLRGK7UE0">
+      <span class="tap" data-page-node-id="KdGxVkYeA81Adzql5hMw1v">点击进入</span>
+      <img src="sysu-admission-site-v1.0/assets/campus-dong.png" alt="东校园图书馆" data-page-node-id="IyCWUJ6l0eBWywL5eK386u">
+      <div class="place" data-page-node-id="9GktEZOqJ5b1hnR6XgZPys">广州 · 东校园</div>
+      <h4 data-page-node-id="aHrfYo55WW5HGuneRqHDuN">图书馆</h4>
+      <p data-page-node-id="SbvSu7fRNrsWZoRjkQyOVz">大学城的知识之门。</p>
+    </div>
+    <div class="bldg" data-key="shenzhen" data-page-node-id="GuCoLSDSQqKckb7XrGIBRM">
+      <span class="tap" data-page-node-id="FICTSIzFhFtEPIDKqxfCE5">点击进入</span>
+      <img src="sysu-admission-site-v1.0/assets/campus-shenzhen.png" alt="深圳校区图书馆" data-page-node-id="H9YPK9wH3Urqalszh9lJi7">
+      <div class="place" data-page-node-id="tcaQmsoFn1oNz02mtl3GtE">深圳校区</div>
+      <h4 data-page-node-id="SCJ0CzK2kMMWpHk2OS6tA4">图书馆</h4>
+      <p data-page-node-id="7fpMcPOQcnOvdVGNdubgJb">山海之间，红砖新章。</p>
+    </div>
+    <div class="bldg" data-key="zhuhai" data-page-node-id="F2u29JEWQp4ZZ7ZEGv5wOG">
+      <span class="tap" data-page-node-id="ou7SH6h1CFLrfuJyIhGhr9">点击进入</span>
+      <img src="sysu-admission-site-v1.0/assets/campus-zhuhai.png" alt="珠海校区天琴中心" data-page-node-id="8LJPb4hcmAoAvlo902nyC3">
+      <div class="place" data-page-node-id="4mb30WyIBNFcqp4NELGiCv">珠海校区</div>
+      <h4 data-page-node-id="BUymBvy5MZWLjtsFxxDlqW">天琴中心</h4>
+      <p data-page-node-id="ovrbtjoNtW4bJxLVricPNe">仰望星空，聆听引力波。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 详情浮层 ===== -->
+<div class="overlay" id="overlay" data-page-node-id="YS051Cf13d3Vy8CNCnhftF">
+  <div class="detail" role="dialog" aria-modal="true" data-page-node-id="1wMJUXSvfvsPzQyOKQ4LHD">
+    <button class="d-close" id="closeBtn" title="返回长廊" data-page-node-id="Px8upYBxLn9CLbVcXPXbrO">✕</button>
+    <div class="detail-left" id="detailLeft" data-page-node-id="I95S792gt50jFgbGAc7ddK">
+      <img id="detailImg" src="" alt="" data-page-node-id="NHEcwtSEfhw2zIj91THpwK">
+    </div>
+    <div class="detail-right" data-page-node-id="QMkgFpSTtiQPBEFkw6akVJ">
+      <div class="d-place d-anim" id="dPlace" data-page-node-id="sRmoSGezq8sHiutVsXaltp"></div>
+      <h2 class="d-name d-anim" id="dName" data-page-node-id="hj7QzluwoNlBGMd3dXbchD"></h2>
+      <div class="d-en d-anim" id="dEn" data-page-node-id="aTtSAdXZwYLSyH4dAzWMut"></div>
+      <p class="d-desc d-anim" id="dDesc" data-page-node-id="mkn2j83ldqHLdvuJdVpvph"></p>
+      <div class="d-tags d-anim" id="dTags" data-page-node-id="5qdlC6YxZyuvsVj4m9ygPH"></div>
+      <div class="d-stats d-anim" id="dStats" data-page-node-id="0WWtstTTBAEwSroGR00bMZ"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ============ 五校园详细资料（示意文案，可直接替换） ============ */
+  var DATA = {
+    nan:{
+      place:'广州 · 南校园（康乐园）', name:'怀士堂', en:'SWASEY HALL, KANGLEYUAN',
+      desc:'怀士堂坐落于康乐园中轴线的南端，1917年落成，红砖绿瓦、尖顶拱窗，是中大最具辨识度的精神图腾。1923年，孙中山先生曾在此对学生演讲，留下「立志要做大事，不可要做大官」的嘱托。堂前大草坪开阔如毯，是每年毕业合影与开学典礼的所在。',
+      tags:['百年中轴线','人文社科重镇','大草坪与惺亭','陈寅恪故居'],
+      stats:[['1917','礼堂落成'],['1923','中山先生演讲'],['No.1','中大地标']]
+    },
+    bei:{
+      place:'广州 · 北校园', name:'中山医红楼', en:'ZSOM RED BUILDING',
+      desc:'北校园是中山医科的根脉所在，前身可溯至1866年的博济医学堂，孙中山先生曾在此习医。「救人救国救世」的誓言刻在红楼的廊柱之间，中山医百余年薪火相传，是国内历史最悠久的医学教育重镇之一。',
+      tags:['医科精英教育','中山医品牌','百年医脉','附属医院集群'],
+      stats:[['1866','医学堂始创'],['158年+','医脉传承'],['7+','附属医院']]
+    },
+    dong:{
+      place:'广州 · 东校园（大学城）', name:'图书馆', en:'LIBRARY, EAST CAMPUS',
+      desc:'东校园位于广州大学城，2004年启用。图书馆横卧于校园中轴，如一本摊开的书，是整座校园的知识之门。这里汇聚了工科与社会科学的主要院系，年轻、开放、节奏明快，是中大面向新世纪的生长极。',
+      tags:['大学城核心','工科与社科','现代书院制','摊开的书'],
+      stats:[['2004','校区启用'],['70万㎡','校区面积'],['24h','自习空间']]
+    },
+    shenzhen:{
+      place:'深圳校区（光明）', name:'图书馆', en:'LIBRARY, SHENZHEN CAMPUS',
+      desc:'深圳校区2020年在光明区全面启用，依山而建、红砖新章。校区聚焦新医科与新工科，紧贴粤港澳大湾区的产业前沿，把实验室建在创新链上。山海之间的这座城市校园，是中大声学与深圳速度的合奏。',
+      tags:['新工科新医科','湾区产业前沿','依山而建','创新街区'],
+      stats:[['2020','全面启用'],['500万㎡','规划体量'],['10+','入驻学院']]
+    },
+    zhuhai:{
+      place:'珠海校区（唐家湾）', name:'天琴中心', en:'TIANQIN CENTER, ZHUHAI',
+      desc:'珠海校区面朝伶仃洋，背靠凤凰山，是国内公认的最美海滨校园之一。天琴计划在此仰望星空——空间引力波探测的大科学装置正一步步从图纸走向轨道。海洋科学与基础学科在咸咸的海风里生长。',
+      tags:['天琴计划','海洋科学','最美海滨校园','大科学装置'],
+      stats:[['2000','校区启用'],['3.5km','海岸线'],['LISA','国际合作']]
+    }
+  };
+
+  var row      = document.getElementById('campusRow');
+  var overlay  = document.getElementById('overlay');
+  var leftSlot = document.getElementById('detailLeft');
+  var dImg     = document.getElementById('detailImg');
+
+  /* ============ 打开详情：自转放大 → 飞落左侧 ============ */
+  function openDetail(card, key){
+    var data = DATA[key];
+    var img  = card.querySelector('img');
+    var start = img.getBoundingClientRect();
+
+    /* 其他卡片淡出，聚焦当前 */
+    row.querySelectorAll('.bldg').forEach(function(b){
+      if(b !== card) b.classList.add('dim');
+    });
+
+    /* 填充详情内容（此刻浮层尚未可见，仅用于测量落位） */
+    dImg.src = img.src; dImg.alt = img.alt;
+    document.getElementById('dPlace').textContent = data.place;
+    document.getElementById('dName').textContent  = data.name;
+    document.getElementById('dEn').textContent    = data.en;
+    document.getElementById('dDesc').textContent  = data.desc;
+    document.getElementById('dTags').innerHTML    = data.tags.map(function(t){return '<span>'+t+'</span>';}).join('');
+    document.getElementById('dStats').innerHTML   = data.stats.map(function(s){return '<div><b>'+s[0]+'</b><i>'+s[1]+'</i></div>';}).join('');
+
+    /* 显示浮层（CSS 过渡：背景压暗 + 详情框上浮），随后测量目标位置 */
+    overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    currentKey = key;
+
+    /* 克隆一张图作为“飞行体”，叠在原位 */
+    var fly = img.cloneNode();
+    fly.style.cssText = 'position:fixed;margin:0;z-index:1000;pointer-events:none;'
+      + 'left:'+start.left+'px;top:'+start.top+'px;width:'+start.width+'px;height:'+start.height+'px;'
+      + 'object-fit:contain;will-change:transform;filter:drop-shadow(0 30px 40px rgba(15,30,22,.45));';
+    document.body.appendChild(fly);
+
+    /* 计算落位：详情左栏图片中心 vs 起始中心 */
+    requestAnimationFrame(function(){
+      var target = dImg.getBoundingClientRect();   // 槽位（detail 图片隐藏但占位）
+      var s = Math.min(target.width/start.width, target.height/start.height);
+      var dx = (target.left + target.width/2)  - (start.left + start.width/2);
+      var dy = (target.top  + target.height/2) - (start.top  + start.height/2);
+
+      var anim = fly.animate([
+        { transform:'perspective(1600px) translate(0px,0px) rotateY(0deg) scale(1)',
+          offset:0, easing:'cubic-bezier(.4,0,.25,1)' },
+        { transform:'perspective(1600px) translate('+(dx*0.06)+'px,'+(dy*0.06-48)+'px) rotateY(1080deg) scale(2.1)',
+          offset:0.62, easing:'cubic-bezier(.55,0,.15,1)' },
+        { transform:'perspective(1600px) translate('+dx+'px,'+dy+'px) rotateY(1080deg) scale('+s+')',
+          offset:1 }
+      ], { duration:1500, fill:'forwards' });
+
+      anim.onfinish = function(){
+        fly.remove();
+        leftSlot.classList.add('landed');  // 显形 + 地台光晕亮起
+      };
+    });
+  }
+
+  /* ============ 关闭：淡出浮层，长廊复原 ============ */
+  function closeDetail(){
+    overlay.classList.remove('show');
+    leftSlot.classList.remove('landed');
+    document.body.style.overflow = '';
+    row.querySelectorAll('.bldg').forEach(function(b){ b.classList.remove('dim'); });
+    currentKey = null;
+  }
+
+  var currentKey = null;
+  row.addEventListener('click', function(e){
+    var card = e.target.closest('.bldg');
+    if(card && !card.classList.contains('dim')) openDetail(card, card.dataset.key);
+  });
+  document.getElementById('closeBtn').addEventListener('click', closeDetail);
+  overlay.addEventListener('click', function(e){ if(e.target === overlay) closeDetail(); });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && currentKey) closeDetail();
+  });
+})();
+</script>
+
+</body>
+</html>
