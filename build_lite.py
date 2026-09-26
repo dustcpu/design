@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """构建 campus-ink-ligen-demo.html（仓库版，全部相对路径）。
 
 流程：从 _src/campus-ink-ligen-demo.v3-anim.bak.html 提取超长的
@@ -15,7 +15,7 @@ import re
 BASE = os.path.dirname(os.path.abspath(__file__))
 BAK = os.path.join(BASE, "_src", "campus-ink-ligen-demo.v3-anim.bak.html")
 TPL = os.path.join(BASE, "_src", "ligen-lite.src.html")
-DST = os.path.join(BASE, "campus-ink-ligen-demo.html")
+DST = os.path.join(BASE, "demos", "campus-ink-ligen-demo.html")
 
 html = io.open(BAK, encoding="utf-8").read()
 m = re.search(r"^\s*var GLYPH_IMAGES = .*$", html, re.M)

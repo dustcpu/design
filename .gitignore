@@ -9,12 +9,6 @@ Desktop.ini
 __pycache__/
 *.pyc
 
-# ---- 内部工作文档（不随仓库发布） ----
-项目现状.md
-
-# ---- 大体积二进制备份（内容与 sysu-admission-site-v1.0/ 重复） ----
-sysu-admission-site-v1.0.zip
-
 # ---- 临时产物 ----
 *.log
 *.tmp
