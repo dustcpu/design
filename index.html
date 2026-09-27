@@ -377,6 +377,11 @@
     .scene.pre, .bldg.pre, .stat.pre{opacity:1;transform:none;transition:none}
     html{scroll-behavior:auto}
   }
+  /* 鼠标花瓣拖尾 canvas */
+  .mouse-trail-canvas{
+    position:fixed;inset:0;width:100vw;height:100vh;
+    z-index:50;pointer-events:none;
+  }
 </style>
 </head>
 <body>
@@ -469,20 +474,19 @@
   </div>
 </section>
 
-<!-- ===== 校训：滚动书写 ===== -->
-<section class="motto-scene" id="motto">
-  <div class="motto-sticky">
-    <div class="sec-eyebrow">UNIVERSITY MOTTO</div>
-    <div class="motto-canvas">
-      <div class="motto-grid" id="mottoGrid">
-        <div class="mcol"><div class="mchar" id="mbo"></div><div class="mchar" id="mxue"></div></div>
-        <div class="mcol"><div class="mchar" id="mshen"></div><div class="mchar" id="mwen"></div></div>
-        <div class="mcol"><div class="mchar" id="mzhen"></div><div class="mchar" id="msi"></div></div>
-        <div class="mcol"><div class="mchar" id="mming"></div><div class="mchar" id="mbian"></div></div>
-        <div class="mcol"><div class="mchar" id="mdu"></div><div class="mchar" id="mxing"></div></div>
-      </div>
-    </div>
-    <div class="motto-from">—— 中山大学 校训</div>
+<!-- ===== 招生服务入口 ===== -->
+<section id="service">
+  <div class="sec-head" style="text-align:center">
+    <div class="sec-eyebrow" style="text-align:center">ADMISSION SERVICES</div>
+    <h2 class="sec-title">走进中大，从这里开始</h2>
+  </div>
+  <div class="svc-row">
+    <div class="svc" data-name="学校概况">学校概况</div>
+    <div class="svc" data-name="院系专业">院系专业</div>
+    <div class="svc" data-name="招生章程">招生章程</div>
+    <div class="svc" data-name="招生计划">招生计划</div>
+    <div class="svc" data-name="历年分数">历年分数</div>
+    <div class="svc" data-name="联系院系">联系院系</div>
   </div>
 </section>
 
@@ -517,19 +521,20 @@
   <div class="stats-note">数据来源：中山大学官网及本科招生网公开介绍（2026）</div>
 </section>
 
-<!-- ===== 招生服务入口 ===== -->
-<section id="service">
-  <div class="sec-head" style="text-align:center">
-    <div class="sec-eyebrow" style="text-align:center">ADMISSION SERVICES</div>
-    <h2 class="sec-title">走进中大，从这里开始</h2>
-  </div>
-  <div class="svc-row">
-    <div class="svc" data-name="学校概况">学校概况</div>
-    <div class="svc" data-name="院系专业">院系专业</div>
-    <div class="svc" data-name="招生章程">招生章程</div>
-    <div class="svc" data-name="招生计划">招生计划</div>
-    <div class="svc" data-name="历年分数">历年分数</div>
-    <div class="svc" data-name="联系院系">联系院系</div>
+<!-- ===== 校训：滚动书写 ===== -->
+<section class="motto-scene" id="motto">
+  <div class="motto-sticky">
+    <div class="sec-eyebrow">UNIVERSITY MOTTO</div>
+    <div class="motto-canvas">
+      <div class="motto-grid" id="mottoGrid">
+        <div class="mcol"><div class="mchar" id="mbo"></div><div class="mchar" id="mxue"></div></div>
+        <div class="mcol"><div class="mchar" id="mshen"></div><div class="mchar" id="mwen"></div></div>
+        <div class="mcol"><div class="mchar" id="mzhen"></div><div class="mchar" id="msi"></div></div>
+        <div class="mcol"><div class="mchar" id="mming"></div><div class="mchar" id="mbian"></div></div>
+        <div class="mcol"><div class="mchar" id="mdu"></div><div class="mchar" id="mxing"></div></div>
+      </div>
+    </div>
+    <div class="motto-from">—— 中山大学 校训</div>
   </div>
 </section>
 
@@ -933,5 +938,185 @@ var CHAR_DATA={"博":{"s":["M 281 511 Q 380 544 381 545 Q 388 552 384 561 Q 377 
 })();
 </script>
 
+  <!-- 春主题桃花瓣鼠标拖尾（移植自Geometric Islands） -->
+  <script>
+  (function(){
+    var MAX_PARTICLES = 60;
+    var IDLE_MS = 100;
+    function rand(a,b){return a+Math.random()*(b-a);}
+
+    var CFG = {
+      rate:[20,28], life:[45,62], size:[2.4,4.4],
+      color:'#f8c8d8',
+      vx:[-16,16], vy:[-14,7], gravity:14, drag:0.955,
+      rotSpeed:[-3.4,3.4], sway:6, swayFreq:[1.2,2.2]
+    };
+
+    var overlay = document.createElement('canvas');
+    overlay.className = 'mouse-trail-canvas';
+    overlay.setAttribute('aria-hidden','true');
+    document.body.appendChild(overlay);
+    var ctx = overlay.getContext('2d');
+    var W=0,H=0,DPR=1;
+
+    function resize(){
+      DPR = Math.min(window.devicePixelRatio||1, 2);
+      W = window.innerWidth; H = window.innerHeight;
+      overlay.width = Math.round(W*DPR);
+      overlay.height = Math.round(H*DPR);
+      overlay.style.width = W+'px';
+      overlay.style.height = H+'px';
+      ctx.setTransform(DPR,0,0,DPR,0,0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    var particles = [];
+    var curRate = 10, emitAcc = 0, wasEmpty = false;
+    var mouse = {x:0,y:0,moving:false,has:false,lastMove:0};
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    window.addEventListener('mousemove', function(e){
+      mouse.x = e.clientX; mouse.y = e.clientY;
+      mouse.moving = true; mouse.has = true;
+      mouse.lastMove = performance.now();
+    }, {passive:true});
+    document.addEventListener('mouseleave', function(){ mouse.moving = false; });
+
+    function sampleRate(){ return rand(CFG.rate[0], CFG.rate[1]); }
+
+    function evictIfFull(){
+      if(particles.length < MAX_PARTICLES) return;
+      var worst=0, worstLife=Infinity;
+      for(var i=0;i<particles.length;i++){
+        if(particles[i].life < worstLife){ worstLife=particles[i].life; worst=i; }
+      }
+      particles.splice(worst,1);
+    }
+
+    function spawn(x,y){
+      var p = {
+        x:x, y:y, vx:0, vy:0,
+        size: rand(CFG.size[0], CFG.size[1]),
+        rotation: Math.random()*Math.PI*2,
+        rotSpeed: rand(CFG.rotSpeed[0], CFG.rotSpeed[1]),
+        swayPhase: Math.random()*Math.PI*2,
+        swayFreq: rand(CFG.swayFreq[0], CFG.swayFreq[1]),
+        maxLife: rand(CFG.life[0], CFG.life[1])/60,
+        life:0, alpha:0,
+        floret: Math.random() < 0.125
+      };
+      p.life = p.maxLife;
+      p.vx = rand(CFG.vx[0], CFG.vx[1]);
+      p.vy = rand(CFG.vy[0], CFG.vy[1]);
+      return p;
+    }
+
+    function update(dt){
+      if(mouse.moving && performance.now()-mouse.lastMove > IDLE_MS) mouse.moving = false;
+
+      if(!reduced && mouse.moving && mouse.has){
+        emitAcc += curRate * dt;
+        while(emitAcc >= 1){
+          emitAcc -= 1;
+          evictIfFull();
+          particles.push(spawn(mouse.x, mouse.y));
+          curRate = sampleRate();
+        }
+      } else { emitAcc = 0; }
+
+      for(var i=particles.length-1;i>=0;i--){
+        var p = particles[i];
+        var dragF = Math.pow(CFG.drag, dt*60);
+        p.life -= dt;
+        if(p.life <= 0){ particles.splice(i,1); continue; }
+        p.vy += CFG.gravity * dt;
+        p.vx *= dragF; p.vy *= dragF;
+        p.swayPhase += p.swayFreq * dt;
+        p.x += (p.vx + Math.sin(p.swayPhase)*CFG.sway) * dt;
+        p.y += p.vy * dt;
+        p.rotation += p.rotSpeed * dt;
+        var k = p.life / p.maxLife;
+        p.alpha = Math.max(0, Math.min(1, (1-k)/0.2, k/0.35));
+      }
+    }
+
+    function petalPath(s){
+      ctx.beginPath();
+      ctx.moveTo(0, s*1.3);
+      ctx.bezierCurveTo(-s*1.15, s*0.85, -s*1.2, -s*0.55, -s*0.3, -s*1.35);
+      ctx.lineTo(0, -s*1.02);
+      ctx.lineTo(s*0.3, -s*1.35);
+      ctx.bezierCurveTo(s*1.2, -s*0.55, s*1.15, s*0.85, 0, s*1.3);
+      ctx.closePath();
+    }
+
+    function drawPetal(p){
+      var s = p.size;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.globalAlpha = p.alpha;
+      var grad = ctx.createLinearGradient(0, s*1.3, 0, -s*1.35);
+      grad.addColorStop(0, '#fdeef4');
+      grad.addColorStop(1, CFG.color);
+      ctx.fillStyle = grad;
+      petalPath(s);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawFloret(p){
+      var s = p.size * 0.55;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.globalAlpha = p.alpha;
+      var grad = ctx.createLinearGradient(0, s*1.3, 0, -s*1.35);
+      grad.addColorStop(0, '#fdeef4');
+      grad.addColorStop(1, CFG.color);
+      ctx.fillStyle = grad;
+      for(var i=0;i<5;i++){
+        ctx.rotate(Math.PI*2/5);
+        petalPath(s);
+        ctx.fill();
+      }
+      ctx.fillStyle = '#f5d76e';
+      for(var j=0;j<5;j++){
+        var ang = j*Math.PI*2/5 + 0.3;
+        ctx.beginPath();
+        ctx.arc(Math.cos(ang)*s*0.5, Math.sin(ang)*s*0.5, s*0.18, 0, Math.PI*2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function draw(){
+      if(!particles.length){
+        if(!wasEmpty){ ctx.clearRect(0,0,W,H); wasEmpty=true; }
+        return;
+      }
+      wasEmpty = false;
+      ctx.clearRect(0,0,W,H);
+      for(var i=0;i<particles.length;i++){
+        var p = particles[i];
+        if(p.floret) drawFloret(p); else drawPetal(p);
+      }
+    }
+
+    var last = performance.now();
+    function frame(now){
+      requestAnimationFrame(frame);
+      if(document.hidden){ last=now; return; }
+      var dt = Math.min((now-last)/1000, 0.05);
+      last = now;
+      update(dt);
+      draw();
+    }
+    requestAnimationFrame(frame);
+  })();
+  </script>
+
+  
 </body>
 </html>
