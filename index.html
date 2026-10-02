@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>逐梦前行，心绘中大 · 康乐园招宣概念稿</title>
+<title>中山大学本科招生网 · 招宣概念稿</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 L29 10.5 L16 18 L3 10.5 Z' fill='%23C9A24B'/%3E%3Cpath d='M3 10.5 L16 18 L16 29 L3 21.5 Z' fill='%238B3A2E'/%3E%3Cpath d='M29 10.5 L16 18 L16 29 L29 21.5 Z' fill='%231E3D2C'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
 <style>
@@ -39,9 +39,10 @@
   }
   .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.08em}
   .brand-mark{width:22px;height:22px;flex:none}
-  .nav-links{display:flex;gap:28px;font-size:14px}
+  .nav-links{display:flex;gap:18px;font-size:13px;align-items:center}
   .nav-links a{color:var(--ink);text-decoration:none;opacity:.75;transition:opacity .2s}
   .nav-links a:hover{opacity:1}
+  .nav-sep{width:1px;height:16px;background:var(--line);margin:0 4px}
 
   /* ===== Hero ===== */
   .hero{
@@ -69,10 +70,19 @@
   }
   .hero-meta b{display:block;font-size:22px;color:var(--ink);font-weight:700}
   .hero-img{
-    position:relative;display:flex;align-items:center;justify-content:center;min-height:340px;
+    position:relative;display:flex;flex-direction:column;align-items:center;gap:32px;min-height:340px;
   }
-  .hero-img img{
-    width:64%;max-width:340px;
+  .hero-logo{
+    width:64%;max-width:300px;
+  }
+  .hero-photo{
+    width:100%;max-width:380px;aspect-ratio:4/3;overflow:hidden;
+    border:8px solid #fff;box-shadow:0 12px 40px rgba(31,77,56,.18);
+    transform:rotate(1.5deg);transition:transform .4s ease;
+  }
+  .hero-photo:hover{transform:rotate(0deg) scale(1.02)}
+  .hero-photo img{
+    width:100%;height:100%;object-fit:cover;display:block;
   }
 
   /* ===== 通用 section ===== */
@@ -412,30 +422,32 @@
       <path d="M3 10.5 L16 18 L16 29 L3 21.5 Z" fill="#8B3A2E"/>
       <path d="M29 10.5 L16 18 L16 29 L29 21.5 Z" fill="#1E3D2C"/>
     </svg>
-    康乐园 · 招宣概念稿
+    中山大学本科招生网
   </div>
   <div class="nav-links">
+    <a href="#" data-svc="学校概况">学校概况</a>
+    <a href="#" data-svc="院系专业">院系专业</a>
+    <a href="#" data-svc="招生章程">招生章程</a>
+    <a href="#" data-svc="招生计划">招生计划</a>
+    <a href="#" data-svc="历年分数">历年分数</a>
+    <a href="#" data-svc="联系院系">联系院系</a>
+    <span class="nav-sep"></span>
     <a href="#campus">五校园</a>
     <a href="#motto">校训</a>
-    <a href="#ending">相见</a>
   </div>
 </nav>
 
 <!-- ===== Hero ===== -->
 <header class="hero">
   <div>
-    <div class="hero-eyebrow">SUN YAT-SEN UNIVERSITY · 2026</div>
-    <h1>逐梦前行，<br><span class="accent">心绘中大</span>。</h1>
-    <p class="hero-sub">我们拍下这座校园的真实模样，也把它收进掌心的模型里——
-      一半是相机，一半是图纸；一半是脚下的康乐园，一半是你要去的远方。</p>
-    <div class="hero-meta">
-      <div><b>05</b>座校园地标</div>
-      <div><b>2</b>种凝视视角</div>
-      <div><b>1</b>座心中的中大</div>
-    </div>
+    <div class="hero-eyebrow">SUN YAT-SEN UNIVERSITY · 本科招生</div>
+    <h1>吾校矗立，<br><span class="accent">蔚为国光</span>。</h1>
   </div>
   <div class="hero-img">
-    <img src="assets/logo.gif" alt="中山大学校徽与中英文校名标准组合">
+    <img src="assets/logo.svg" alt="中山大学校徽与中英文校名标准组合" class="hero-logo">
+    <div class="hero-photo">
+      <img src="assets/hero-campus.jpg" alt="中山大学校园风光">
+    </div>
   </div>
 </header>
 
@@ -471,22 +483,6 @@
     <button class="lb-close" aria-label="关闭">&times;</button>
     <img src="" alt="">
     <div class="lb-cap"></div>
-  </div>
-</section>
-
-<!-- ===== 招生服务入口 ===== -->
-<section id="service">
-  <div class="sec-head" style="text-align:center">
-    <div class="sec-eyebrow" style="text-align:center">ADMISSION SERVICES</div>
-    <h2 class="sec-title">走进中大，从这里开始</h2>
-  </div>
-  <div class="svc-row">
-    <div class="svc" data-name="学校概况">学校概况</div>
-    <div class="svc" data-name="院系专业">院系专业</div>
-    <div class="svc" data-name="招生章程">招生章程</div>
-    <div class="svc" data-name="招生计划">招生计划</div>
-    <div class="svc" data-name="历年分数">历年分数</div>
-    <div class="svc" data-name="联系院系">联系院系</div>
   </div>
 </section>
 
@@ -555,7 +551,7 @@
 
 <footer>
   <div class="foot-contact">广东省广州市海珠区新港西路135号 中山大学262栋 教务部招生办公室 ｜ 020-84110558 ｜ adado@mail.sysu.edu.cn ｜ 微信 sysuzs</div>
-  <div>2026 中大招生设计大赛 · 招宣概念稿 ｜ 视觉：实拍照片 + 等距微缩插画 ｜ 仅为参赛设计演示</div>
+  <div>中山大学本科招生网 ｜ 三校区五校园 ｜ 博学审问慎思明辨笃行</div>
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -872,9 +868,11 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
     clearTimeout(t);
     t = setTimeout(function(){ toast.classList.remove('show'); }, 2400);
   }
-  document.querySelectorAll('.svc').forEach(function(el){
-    el.addEventListener('click', function(){
-      showToast('概念稿演示：此处将链接至招生网「' + el.dataset.name + '」栏目');
+  document.querySelectorAll('.svc, [data-svc]').forEach(function(el){
+    el.addEventListener('click', function(e){
+      e.preventDefault();
+      var name = el.dataset.name || el.dataset.svc;
+      showToast('概念稿演示：此处将链接至招生网「' + name + '」栏目');
     });
   });
 
