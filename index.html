@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>中山大学本科招生网 · 招宣概念稿</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 3 L29 10.5 L16 18 L3 10.5 Z' fill='%23C9A24B'/%3E%3Cpath d='M3 10.5 L16 18 L16 29 L3 21.5 Z' fill='%238B3A2E'/%3E%3Cpath d='M29 10.5 L16 18 L16 29 L29 21.5 Z' fill='%231E3D2C'/%3E%3C/svg%3E">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
 <style>
   :root{
@@ -24,25 +24,98 @@
     font-family:'Noto Sans SC',system-ui,-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;
     line-height:1.75;
     -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
   }
+
+  /* ===== 背景枝条 · 微微摆动 ===== */
+  .bg-branches{
+    position:fixed;top:0;left:0;right:0;bottom:0;
+    z-index:0;pointer-events:none;overflow:hidden;
+    --sway:1;
+    transition:--sway .6s ease;
+  }
+  .bg-branches.hover-active{--sway:3.2}
+  .bg-branch{
+    position:absolute;top:0;left:0;
+    will-change:transform;
+  }
+  .bg-branch svg{display:block;width:100%;height:100%}
+  .bg-branch-1{
+    width:500px;height:100%;
+    transform-origin:5% 0%;
+    animation:branchSway1 14s ease-in-out infinite;
+  }
+  .bg-branch-2{
+    width:500px;height:100%;
+    transform-origin:20% 0%;
+    animation:branchSway2 17s ease-in-out infinite;
+    animation-delay:-3s;
+  }
+  .bg-branch-3{
+    width:500px;height:100%;
+    transform-origin:35% 0%;
+    animation:branchSway3 20s ease-in-out infinite;
+    animation-delay:-6s;
+  }
+  @keyframes branchSway1{
+    0%,100%{transform:rotate(calc(-0.7deg * var(--sway)))}
+    50%{transform:rotate(calc(0.9deg * var(--sway)))}
+  }
+  @keyframes branchSway2{
+    0%,100%{transform:rotate(calc(0.5deg * var(--sway)))}
+    50%{transform:rotate(calc(-0.8deg * var(--sway)))}
+  }
+  @keyframes branchSway3{
+    0%,100%{transform:rotate(calc(-0.4deg * var(--sway)))}
+    50%{transform:rotate(calc(0.6deg * var(--sway)))}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .bg-branch{animation:none}
+  }
+
   .serif{font-family:'Noto Serif SC',serif}
   img{display:block;max-width:100%}
 
   /* ===== 导航 ===== */
   nav{
     position:fixed;top:0;left:0;right:0;z-index:100;
-    display:flex;align-items:center;justify-content:space-between;
-    padding:16px 40px;
+    display:flex;align-items:center;gap:32px;
+    padding:14px 40px;
     background:rgba(245,241,232,.88);
     backdrop-filter:blur(8px);
     border-bottom:1px solid var(--line);
   }
-  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.08em}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.08em;flex:none;font-size:14px}
   .brand-mark{width:22px;height:22px;flex:none}
-  .nav-links{display:flex;gap:18px;font-size:13px;align-items:center}
-  .nav-links a{color:var(--ink);text-decoration:none;opacity:.75;transition:opacity .2s}
-  .nav-links a:hover{opacity:1}
-  .nav-sep{width:1px;height:16px;background:var(--line);margin:0 4px}
+  .nav-search{
+    flex:1;max-width:360px;display:flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,.7);border:1px solid var(--line);
+    border-radius:20px;padding:7px 14px;
+    transition:border-color .2s,background .2s;
+  }
+  .nav-search:focus-within{border-color:var(--green);background:#fff}
+  .nav-search svg{width:15px;height:15px;color:#8a968b;flex:none}
+  .nav-search input{
+    border:none;outline:none;background:transparent;flex:1;
+    font-size:12.5px;color:var(--ink);font-family:inherit;
+  }
+  .nav-search input::placeholder{color:#9aab9e}
+  .nav-links{display:flex;gap:14px;font-size:12px;align-items:center;flex:none;margin-left:auto}
+  .nav-anchor{
+    color:var(--ink);text-decoration:none;opacity:.7;
+    position:relative;padding:4px 0;transition:opacity .2s;
+    letter-spacing:.03em;
+  }
+  .nav-anchor::after{
+    content:'';position:absolute;bottom:0;left:0;
+    width:0;height:1.5px;background:var(--brick);
+    transition:width .3s ease;
+  }
+  .nav-anchor:hover{opacity:1}
+  .nav-anchor:hover::after{width:100%}
+  .nav-anchor.active{opacity:1;color:var(--brick)}
+  .nav-anchor.active::after{width:100%}
+  .nav-sep{width:1px;height:14px;background:var(--line);margin:0 2px}
 
   /* ===== Hero ===== */
   .hero{
@@ -94,6 +167,316 @@
     font-size:clamp(28px,3.6vw,44px);font-weight:700;line-height:1.3;
   }
   .sec-lead{margin-top:16px;max-width:560px;color:#3d5244;font-weight:300}
+
+  /* ===== 招生快讯 + 学生风采 ===== */
+  .news-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:start}
+  .news-list{list-style:none;padding:0;margin:0}
+  .news-list li{
+    padding:18px 0;border-bottom:1px solid var(--line);
+    display:flex;gap:16px;align-items:baseline;
+  }
+  .news-list li:last-child{border-bottom:none}
+  .news-date{
+    flex:none;font-family:'Noto Serif SC',serif;font-size:13px;
+    color:var(--brick);letter-spacing:.05em;min-width:52px;
+  }
+  .news-title{
+    font-size:15px;color:var(--ink);font-weight:400;line-height:1.6;
+    transition:color .2s;cursor:pointer;
+  }
+  .news-list li:hover .news-title{color:var(--brick)}
+  .news-tag{
+    flex:none;font-size:11px;padding:2px 8px;border:1px solid var(--line);
+    color:#6b7d6f;border-radius:2px;letter-spacing:.05em;
+  }
+
+  /* 学生风采 */
+  .story-card{
+    background:#fff;border:1px solid var(--line);padding:36px 32px 28px;
+    position:relative;box-shadow:0 4px 20px rgba(31,77,56,.06);
+    overflow:hidden;
+  }
+  .story-card::before{
+    content:'"';position:absolute;top:4px;left:24px;
+    font-family:'Noto Serif SC',serif;font-size:80px;color:var(--brick);
+    opacity:.12;line-height:1;pointer-events:none;
+  }
+  .story-viewport{position:relative;min-height:200px;}
+  .story-slide{
+    position:absolute;top:0;left:0;right:0;
+    opacity:0;transform:translateY(8px);
+    transition:opacity .5s ease,transform .5s ease;
+    pointer-events:none;
+  }
+  .story-slide.active{opacity:1;transform:none;pointer-events:auto;position:relative;}
+  .story-quote{
+    font-family:'Noto Serif SC',serif;font-size:16px;line-height:1.9;
+    color:var(--ink);font-weight:400;margin-bottom:24px;position:relative;z-index:1;
+  }
+  .story-author{display:flex;align-items:center;gap:0}
+  .story-author-line{
+    width:3px;height:36px;background:var(--brick);opacity:.6;margin-right:14px;flex:none;
+  }
+  .story-info .name{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:.02em}
+  .story-info .meta{font-size:12px;color:#6b7d6f;margin-top:3px;letter-spacing:.02em}
+  .story-dots{
+    display:flex;gap:8px;justify-content:center;margin-top:20px;padding-top:16px;
+    border-top:1px dashed rgba(31,77,56,.12);
+  }
+  .story-dot{
+    width:6px;height:6px;border-radius:50%;background:var(--line);
+    cursor:pointer;transition:all .3s;border:none;padding:0;
+  }
+  .story-dot.active{background:var(--brick);width:20px;border-radius:3px;}
+  .story-hint{
+    text-align:center;font-size:10.5px;color:#9aab9e;margin-top:8px;letter-spacing:.15em;
+  }
+
+  /* ===== AI育人新范式 ===== */
+  .ai-wrap{
+    display:grid;grid-template-columns:1fr 1.4fr;gap:40px;
+    max-width:1100px;margin:0 auto;padding:0 20px;
+  }
+  .ai-data-col{
+    display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start;
+  }
+  .ai-data-card{
+    background:#fff;border:1px solid var(--line);border-radius:6px;
+    padding:24px 16px;text-align:center;transition:transform .3s ease;
+  }
+  .ai-data-card:hover{transform:translateY(-3px)}
+  .ai-data-num{
+    font-family:"Noto Serif SC",serif;font-size:36px;font-weight:900;
+    color:var(--green);line-height:1;margin-bottom:10px;
+  }
+  .ai-data-num small{font-size:14px;font-weight:600;margin-left:2px}
+  .ai-data-label{
+    font-size:11.5px;color:#6b7568;line-height:1.6;letter-spacing:.02em;
+  }
+  .ai-platform-col{display:flex;flex-direction:column;gap:14px}
+  .ai-platform-card{
+    display:flex;gap:16px;align-items:flex-start;
+    background:#fff;border:1px solid var(--line);border-radius:6px;
+    padding:20px;transition:transform .3s ease,box-shadow .3s ease;
+  }
+  .ai-platform-card:hover{
+    transform:translateX(4px);
+    box-shadow:-4px 0 0 var(--green);
+  }
+  .ai-platform-icon{
+    width:40px;height:40px;flex-shrink:0;
+    background:linear-gradient(135deg,var(--green),#3a7a5c);
+    border-radius:6px;display:flex;align-items:center;justify-content:center;
+    color:#fff;
+  }
+  .ai-platform-icon svg{width:22px;height:22px}
+  .ai-platform-name{
+    font-family:"Noto Serif SC",serif;font-size:15px;font-weight:700;
+    color:var(--ink);margin-bottom:6px;letter-spacing:.02em;
+  }
+  .ai-platform-desc{
+    font-size:12px;color:#6b7568;line-height:1.7;letter-spacing:.01em;
+  }
+  .ai-beyond .ai-platform-icon{
+    background:linear-gradient(135deg,var(--brick),#a84a3a);
+  }
+  .ai-footnote{
+    text-align:center;margin-top:28px;font-size:11px;color:#9aab9e;
+    letter-spacing:.05em;
+  }
+  @media(max-width:860px){
+    .ai-wrap{grid-template-columns:1fr;gap:28px}
+    .ai-data-col{grid-template-columns:repeat(4,1fr)}
+  }
+  @media(max-width:600px){
+    .ai-data-col{grid-template-columns:1fr 1fr}
+  }
+
+  /* ===== 报考指南 + 视频 ===== */
+  .guide-wrap{display:grid;grid-template-columns:1.2fr .8fr;gap:56px;align-items:start}
+  .guide-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .guide-card{
+    background:#fff;border:1px solid var(--line);padding:24px 20px;
+    text-align:center;cursor:pointer;transition:all .25s ease;
+  }
+  .guide-card:hover{
+    border-color:var(--brick);transform:translateY(-3px);
+    box-shadow:0 8px 24px rgba(139,58,46,.1);
+  }
+  .guide-icon{
+    width:44px;height:44px;margin:0 auto 14px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--green);transition:color .25s;
+  }
+  .guide-icon svg{width:32px;height:32px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .guide-card:hover .guide-icon{color:var(--brick)}
+  .guide-name{font-size:14px;font-weight:600;color:var(--ink)}
+  .guide-desc{font-size:11px;color:#6b7d6f;margin-top:6px;line-height:1.5}
+
+  /* 视频位 */
+  .video-box{
+    aspect-ratio:16/10;background:linear-gradient(135deg,#1a3a28,#2F5D46);
+    position:relative;overflow:hidden;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .video-box::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(circle at 30% 40%,rgba(201,162,75,.15),transparent 60%);
+  }
+  .video-play{
+    width:64px;height:64px;border-radius:50%;
+    background:rgba(255,255,255,.15);backdrop-filter:blur(4px);
+    border:2px solid rgba(255,255,255,.4);
+    display:flex;align-items:center;justify-content:center;
+    transition:all .3s;position:relative;z-index:1;
+  }
+  .video-box:hover .video-play{background:var(--brick);border-color:var(--brick);transform:scale(1.1)}
+  .video-play::after{
+    content:'';border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;
+    margin-left:4px;
+  }
+  .video-label{
+    position:absolute;bottom:16px;left:20px;color:rgba(255,255,255,.8);
+    font-size:12px;letter-spacing:.1em;z-index:1;
+  }
+  .video-duration{
+    position:absolute;bottom:16px;right:20px;color:rgba(255,255,255,.6);
+    font-size:12px;z-index:1;
+  }
+
+  /* ===== 特殊招生类型 ===== */
+  .special-sec{padding:80px 40px;background:linear-gradient(180deg,var(--paper) 0%,#efe9dc 100%)}
+  .special-grid{
+    display:grid;grid-template-columns:repeat(6,1fr);gap:20px;
+    max-width:1100px;margin:0 auto;
+  }
+  .special-card{
+    display:flex;flex-direction:column;align-items:center;text-align:center;
+    padding:28px 16px 24px;background:#fff;border:1px solid var(--line);
+    text-decoration:none;color:var(--ink);transition:all .3s ease;
+    position:relative;overflow:hidden;
+  }
+  .special-card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:var(--green);transform:scaleX(0);transition:transform .3s ease;
+  }
+  .special-card:hover{
+    transform:translateY(-4px);box-shadow:0 8px 24px rgba(31,77,56,.1);
+    border-color:var(--green);
+  }
+  .special-card:hover::before{transform:scaleX(1)}
+  .special-card:hover .special-icon{color:var(--brick);transform:scale(1.08)}
+  .special-icon{
+    width:48px;height:48px;color:var(--green);margin-bottom:16px;
+    transition:all .3s ease;
+  }
+  .special-icon svg{width:100%;height:100%}
+  .special-name{
+    font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;
+    letter-spacing:.03em;
+  }
+  .special-desc{
+    font-size:11px;color:#8a968b;line-height:1.6;letter-spacing:.02em;
+  }
+
+  /* ===== 保选转辅跨 · 自主选专业 ===== */
+  .freedom-flow{
+    display:flex;align-items:stretch;justify-content:center;gap:0;
+    max-width:1200px;margin:0 auto;padding:0 20px;
+  }
+  .freedom-card{
+    flex:1;min-width:0;background:#fff;border:1px solid var(--line);
+    border-radius:6px;padding:28px 20px 24px;text-align:center;
+    transition:transform .3s ease,box-shadow .3s ease;position:relative;
+  }
+  .freedom-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 8px 24px rgba(31,77,56,.12);
+  }
+  .freedom-char{
+    font-family:"Noto Serif SC",serif;font-size:48px;font-weight:900;
+    color:var(--brick);line-height:1;margin-bottom:14px;
+    text-shadow:1px 1px 0 rgba(139,58,46,.08);
+  }
+  .freedom-title{
+    font-family:"Noto Serif SC",serif;font-size:16px;font-weight:700;
+    color:var(--ink);margin-bottom:8px;letter-spacing:.02em;
+  }
+  .freedom-data{
+    font-size:13px;font-weight:600;color:var(--green);
+    margin-bottom:12px;letter-spacing:.02em;
+  }
+  .freedom-desc{
+    font-size:12px;color:#6b7568;line-height:1.7;text-align:left;
+    letter-spacing:.01em;
+  }
+  .freedom-arrow{
+    display:flex;align-items:center;justify-content:center;
+    width:28px;flex-shrink:0;color:var(--line);font-size:18px;font-weight:300;
+  }
+  @media(max-width:900px){
+    .freedom-flow{flex-wrap:wrap;gap:16px}
+    .freedom-card{flex:0 0 calc(50% - 8px);min-width:0}
+    .freedom-arrow{display:none}
+  }
+  @media(max-width:560px){
+    .freedom-card{flex:0 0 100%}
+    .freedom-char{font-size:40px}
+  }
+
+  /* ===== 拔尖创新培养 ===== */
+  .honors-group{max-width:1100px;margin:0 auto}
+  .honors-group-title{
+    display:flex;align-items:baseline;gap:14px;margin-bottom:18px;
+    padding-bottom:10px;border-bottom:1px solid var(--line);
+  }
+  .honors-group-name{
+    font-family:'Noto Serif SC',serif;font-size:16px;font-weight:700;
+    color:var(--brick);letter-spacing:.05em;
+  }
+  .honors-group-meta{font-size:11.5px;color:#8a968b;letter-spacing:.03em}
+  .honors-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
+    max-width:1000px;margin:0 auto;
+  }
+  .honors-grid-4{grid-template-columns:repeat(4,1fr);gap:14px;max-width:1100px}
+  .honor-card{
+    background:#fff;border:1px solid var(--line);padding:20px 18px;
+    position:relative;transition:all .3s ease;overflow:hidden;
+  }
+  .honors-grid-4 .honor-card{padding:18px 15px}
+  .honors-grid-4 .honor-name{font-size:15px}
+  .honors-grid-4 .honor-school{font-size:11px}
+  .honors-grid-4 .honor-desc{font-size:11.5px;line-height:1.7}
+  .honor-card::after{
+    content:'';position:absolute;bottom:0;left:0;width:100%;height:3px;
+    background:linear-gradient(90deg,var(--green),var(--brick));
+    transform:scaleX(0);transform-origin:left;transition:transform .3s ease;
+  }
+  .honor-card:hover{
+    transform:translateY(-3px);box-shadow:0 8px 24px rgba(31,77,56,.08);
+    border-color:var(--green);
+  }
+  .honor-card:hover::after{transform:scaleX(1)}
+  .honor-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  .honor-tag{
+    font-size:10px;padding:3px 8px;border-radius:2px;letter-spacing:.05em;
+    font-weight:500;
+  }
+  .tag-red{background:rgba(139,58,46,.1);color:var(--brick)}
+  .tag-green{background:rgba(31,77,56,.1);color:var(--green)}
+  .tag-gold{background:rgba(201,162,75,.15);color:#9a7a2e}
+  .tag-blue{background:rgba(47,93,70,.1);color:var(--green)}
+  .honor-name{
+    font-family:'Noto Serif SC',serif;font-size:17px;font-weight:700;
+    color:var(--ink);line-height:1.4;margin-bottom:8px;letter-spacing:.02em;
+  }
+  .honor-school{
+    font-size:12px;color:var(--brick);margin-bottom:12px;
+    padding-bottom:10px;border-bottom:1px dashed rgba(31,77,56,.12);
+    letter-spacing:.02em;
+  }
+  .honor-desc{font-size:12.5px;color:#5a6b5e;line-height:1.75}
 
   /* ===== 场景网格 ===== */
   .scenes{display:grid;grid-template-columns:repeat(2,1fr);gap:40px;max-width:960px}
@@ -152,9 +535,12 @@
       linear-gradient(160deg, #F8F3E8 0%, #F2ECDA 50%, #EFE7D2 100%);
     border:1px solid rgba(139,58,46,.35);
     padding:32px 36px 28px;
-    display:grid; grid-template-columns:280px 1fr; gap:32px;
+    display:grid; grid-template-columns:280px 1fr 108px; gap:32px;
     box-shadow:0 10px 40px -14px rgba(31,77,56,.22), inset 0 0 60px rgba(200,180,140,.08);
+    transition:opacity .22s ease;
   }
+  /* 切换校区时的内容淡入淡出（信纸本身不重播展开动画） */
+  .letter-paper.switching{opacity:.25}
   /* 信笺四角装饰 */
   .letter-paper::before, .letter-paper::after{
     content:''; position:absolute; width:18px; height:18px; border:1.5px solid var(--brick);
@@ -167,6 +553,35 @@
     content:''; position:absolute; left:0; top:4px; bottom:4px; width:1px;
     background:linear-gradient(to bottom, transparent, rgba(139,58,46,.25) 10%, rgba(139,58,46,.25) 90%, transparent);
   }
+
+  /* ===== 右侧：其余校区导航（竖排一列，每个横着写） ===== */
+  .letter-nav{position:relative; padding-left:20px}
+  /* 同样一道装订线，与左侧呼应 */
+  .letter-nav::before{
+    content:''; position:absolute; left:0; top:4px; bottom:4px; width:1px;
+    background:linear-gradient(to bottom, transparent, rgba(139,58,46,.25) 10%, rgba(139,58,46,.25) 90%, transparent);
+  }
+  .nav-label{
+    font-size:9.5px; letter-spacing:.22em; color:var(--brick); font-weight:700;
+    display:block; margin-bottom:12px; white-space:nowrap;
+  }
+  .nav-item{
+    appearance:none; background:none; border:0; padding:5px 0; width:100%;
+    font-family:'Noto Serif SC',serif; font-size:14px; letter-spacing:.1em;
+    color:#5a6e5e; text-align:left; cursor:pointer; position:relative;
+    transition:color .22s, padding-left .22s;
+  }
+  .nav-item::before{
+    content:''; position:absolute; left:0; top:50%; width:0; height:1px;
+    background:var(--brick); transition:width .22s;
+  }
+  .nav-item:hover{color:var(--brick); padding-left:14px}
+  .nav-item:hover::before{width:9px}
+  .nav-item small{
+    display:block; font-size:9px; letter-spacing:.16em; color:#A8B0A8; margin-top:1px;
+    transition:color .22s;
+  }
+  .nav-item:hover small{color:#B08A82}
 
   /* ===== 照片堆叠（拍立得·滚轮翻页） ===== */
   .letter-photos{position:relative; height:210px; margin-bottom:4px}
@@ -194,6 +609,13 @@
     display:flex; align-items:center; justify-content:center;
     color:#A89B80; font-size:10px; font-family:serif; letter-spacing:.1em;
   }
+  /* 点击放大的照片：移到左栏下方空白处（位移由 JS 计算），可贴近装订线但不压文字 */
+  .polaroid.enlarged{
+    z-index:30;
+    box-shadow:0 26px 60px rgba(0,0,0,.35);
+    opacity:1;
+    cursor:zoom-out;
+  }
   .polaroid .ph-img img{width:100%; height:100%; object-fit:cover; display:block}
   .polaroid .ph-cap{
     font-size:9.5px; color:#A89B80; text-align:center; margin-top:6px;
@@ -203,11 +625,11 @@
   /* ===== 信笺文字 ===== */
   .letter-city{font-size:11px; letter-spacing:.35em; color:var(--brick); font-weight:700}
   .letter-name{
-    font-family:'Noto Serif SC',serif; font-size:28px; font-weight:700;
+    font-family:'Noto Serif SC',serif; font-size:32px; font-weight:700;
     color:var(--green); margin-top:8px; letter-spacing:.06em;
   }
   .letter-desc{
-    margin-top:16px; font-size:13.5px; line-height:2; color:#3a4f3e; font-weight:300;
+    margin-top:16px; font-size:15px; line-height:2; color:#3a4f3e; font-weight:300;
     text-align:justify;
   }
   .letter-colleges{
@@ -243,10 +665,10 @@
   .branch-right{text-align:left; padding-left:8px;}
   .branch-left, .branch-right{
     font-size:11px; font-family:'Noto Serif SC',serif; color:var(--green);
-    line-height:1.5;
+    line-height:1.5; cursor:pointer; transition:color .2s;
+    text-decoration:none; display:inline-block;
   }
-  .branch-pair:hover .branch-left,
-  .branch-pair:hover .branch-right{color:var(--brick);}
+  .branch-left:hover, .branch-right:hover{color:var(--brick); text-decoration:underline; text-underline-offset:2px;}
   @keyframes branchGrow{to{stroke-dashoffset:0;}}
   @keyframes nodePop{to{opacity:1;}}
   @keyframes pairIn{to{opacity:1; transform:none;}}
@@ -298,19 +720,127 @@
     .polaroid:nth-child(2){left:70px}
     .polaroid:nth-child(3){left:140px}
     .letter-seal{height:34px; right:16px; bottom:16px}
+    /* 窄屏：右侧导航转到底部，横向一排 */
+    .letter-nav{
+      order:9; padding-left:0; padding-top:16px; margin-top:6px;
+      border-top:1px dashed rgba(139,58,46,.2);
+      display:flex; flex-wrap:wrap; align-items:center; gap:4px 18px;
+    }
+    .letter-nav::before{display:none}
+    .nav-label{margin-bottom:0; margin-right:6px}
+    .nav-item{width:auto; padding:4px 0}
+    .nav-item:hover{padding-left:0}
+    .nav-item:hover::before{width:0}
+    .nav-item small{display:none}
   }
 
   /* ===== 优势数据 ===== */
-  .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;text-align:center}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:32px 24px;text-align:center;max-width:1000px;margin:0 auto}
   .stat.pre{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
   .stat.in{opacity:1;transform:none}
   .stat .num{
     font-family:'Noto Serif SC',serif;
-    font-size:clamp(34px,4vw,52px);font-weight:900;color:var(--brick);line-height:1;
+    font-size:clamp(30px,3.2vw,44px);font-weight:900;color:var(--brick);line-height:1;
   }
-  .stat .num small{font-size:.45em;color:var(--ink);font-weight:400}
-  .stat .label{margin-top:12px;font-size:13px;color:#4a5f50;line-height:1.6}
+  .stat .num small{font-size:.42em;color:var(--ink);font-weight:400}
+  .stat .label{margin-top:10px;font-size:12.5px;color:#4a5f50;line-height:1.6}
   .stats-note{margin-top:40px;text-align:center;font-size:12px;color:#8a968b}
+
+  /* ===== 数据可视化网格 ===== */
+  .data-viz-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:24px;
+    max-width:1100px;margin:48px auto 0;
+  }
+  .viz-card{
+    background:#fff;border:1px solid var(--line);padding:26px 26px 22px;
+  }
+  .viz-title{
+    font-family:'Noto Serif SC',serif;font-size:15.5px;font-weight:700;
+    color:var(--ink);margin-bottom:22px;padding-bottom:11px;
+    border-bottom:1px solid var(--line);letter-spacing:.03em;
+  }
+  /* 条形图 */
+  .bar-chart{display:flex;flex-direction:column;gap:14px}
+  .bar-item{display:grid;grid-template-columns:120px 1fr;align-items:center;gap:12px}
+  .bar-label{font-size:11.5px;color:#4a5f50;text-align:right;line-height:1.4}
+  .bar-track{
+    height:20px;background:#f0ead9;border-radius:2px;position:relative;overflow:hidden;
+  }
+  .bar-fill{
+    height:100%;background:linear-gradient(90deg,var(--green),#3d7a5c);
+    border-radius:2px;position:relative;transition:width 1s ease;
+    min-width:30px;
+  }
+  .bar-fill span{
+    position:absolute;right:7px;top:50%;transform:translateY(-50%);
+    font-size:10.5px;font-weight:700;color:#fff;letter-spacing:.02em;
+  }
+  /* 学科实力层级 */
+  .tier-chart{display:flex;flex-direction:column;gap:10px}
+  .tier-item{
+    display:flex;align-items:center;gap:16px;padding:12px 14px;
+    border-radius:3px;position:relative;overflow:hidden;
+  }
+  .tier-item::before{
+    content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  }
+  .tier-top{background:linear-gradient(90deg,rgba(139,58,46,.08),transparent)}
+  .tier-top::before{background:var(--brick)}
+  .tier-mid{background:linear-gradient(90deg,rgba(47,93,70,.08),transparent)}
+  .tier-mid::before{background:var(--green)}
+  .tier-low{background:linear-gradient(90deg,rgba(201,162,75,.08),transparent)}
+  .tier-low::before{background:var(--gold)}
+  .tier-base{background:linear-gradient(90deg,rgba(31,77,56,.05),transparent)}
+  .tier-base::before{background:#8a968b}
+  .tier-num{
+    font-family:'Noto Serif SC',serif;font-size:28px;font-weight:900;
+    color:var(--ink);line-height:1;min-width:64px;text-align:center;
+  }
+  .tier-num span{font-size:.4em;font-weight:400;color:#6b7d6f;margin-left:2px}
+  .tier-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+  .tier-desc{font-size:11px;color:#6b7d6f}
+  /* 环形图 */
+  .ring-row{display:flex;justify-content:space-around;gap:10px;margin-bottom:18px}
+  .ring-item{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .ring{position:relative;width:88px;height:88px;flex:none}
+  .ring svg{width:100%;height:100%}
+  .ring-num{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-family:'Noto Serif SC',serif;font-size:20px;font-weight:900;color:var(--ink);
+    line-height:1;text-align:center;
+  }
+  .ring-num small{font-size:.45em;font-weight:400;color:#6b7d6f}
+  .ring-label{font-size:11px;color:#4a5f50;text-align:center;line-height:1.5}
+  .viz-footnote{
+    padding-top:12px;border-top:1px dashed rgba(31,77,56,.15);
+    font-size:11px;color:#6b7d6f;line-height:1.7;text-align:center;
+  }
+  /* 师资力量行 */
+  .faculty-row{
+    display:flex;align-items:stretch;justify-content:space-around;
+    padding:14px 0 18px;border-bottom:1px dashed rgba(31,77,56,.12);margin-bottom:18px;
+  }
+  .faculty-item{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1}
+  .faculty-divider{width:1px;background:var(--line);margin:4px 0}
+  .faculty-num{
+    font-family:'Noto Serif SC',serif;font-size:26px;font-weight:900;
+    color:var(--ink);line-height:1;
+  }
+  .faculty-num span{font-size:.42em;font-weight:400;color:#6b7d6f;margin-left:2px}
+  .faculty-label{font-size:11px;color:#4a5f50;text-align:center;line-height:1.5}
+  /* 就业去向条形 */
+  .employment-bars{display:flex;flex-direction:column;gap:12px}
+  .emp-item{display:grid;grid-template-columns:130px 1fr;align-items:center;gap:10px}
+  .emp-label{font-size:11px;color:#4a5f50;text-align:right;line-height:1.4}
+  .emp-track{height:18px;background:#f0ead9;border-radius:2px;position:relative;overflow:hidden}
+  .emp-fill{height:100%;border-radius:2px;position:relative;transition:width 1s ease;min-width:28px}
+  .emp-brick{background:linear-gradient(90deg,var(--brick),#a84a3c)}
+  .emp-green{background:linear-gradient(90deg,var(--green),#3d7a5c)}
+  .emp-gold{background:linear-gradient(90deg,var(--gold),#d4b45e)}
+  .emp-fill span{
+    position:absolute;right:6px;top:50%;transform:translateY(-50%);
+    font-size:10px;font-weight:700;color:#fff;
+  }
 
   /* ===== 校训：滚动书写 ===== */
   .motto-scene{
@@ -359,6 +889,28 @@
   }
   .foot-contact{color:#5a6e5e;margin-bottom:6px}
 
+  /* 页脚 · 图片来源署名（CC BY-SA 要求署名，做可展开的详情） */
+  .foot-credit{color:#8a968b;margin-bottom:4px}
+  .foot-credit details{display:block}
+  .foot-credit summary{
+    display:inline-block;cursor:pointer;color:#5a6e5e;
+    border-bottom:1px dashed rgba(90,110,94,.45);
+    transition:color .2s;list-style:none;padding-bottom:1px;
+  }
+  .foot-credit summary::-webkit-details-marker{display:none}
+  .foot-credit summary:hover{color:var(--brick);border-bottom-color:var(--brick)}
+  .foot-credit summary .caret{font-size:9px;margin-left:4px;opacity:.7;display:inline-block;transition:transform .25s}
+  .foot-credit details[open] summary .caret{transform:rotate(180deg)}
+  .credit-body{
+    margin:14px auto 4px;max-width:780px;text-align:left;
+    font-size:11.5px;line-height:1.95;color:#7d8a7e;
+    border-left:2px solid var(--line);padding:2px 0 2px 16px;
+  }
+  .credit-body p{margin:7px 0}
+  .credit-body b{color:#5a6e5e;font-weight:600}
+  .credit-body a{color:#5a6e5e;border-bottom:1px solid rgba(90,110,94,.35)}
+  .credit-body a:hover{color:var(--brick);border-bottom-color:var(--brick)}
+
   /* toast */
   .toast{
     position:fixed;left:50%;bottom:36px;transform:translateX(-50%) translateY(20px);
@@ -372,11 +924,27 @@
     .scenes{grid-template-columns:repeat(2,1fr)}
     .campus-ink-row{--cs:clamp(32px,4.5vw,52px);gap:16px}
     .svc-row{grid-template-columns:repeat(3,1fr)}
-    .stats{grid-template-columns:repeat(2,1fr);gap:36px 24px}
+    .stats{grid-template-columns:repeat(2,1fr);gap:32px 20px}
+    .data-viz-grid{grid-template-columns:1fr;gap:20px}
+    .bar-item{grid-template-columns:100px 1fr;gap:10px}
+    .ring{width:80px;height:80px}
     .nav-links{display:none}
+    .nav-search{display:none}
     nav{padding:14px 20px}
     section{padding:64px 20px}
     .hero{padding-left:20px;padding-right:20px}
+    .news-grid{grid-template-columns:1fr;gap:40px}
+    .guide-wrap{grid-template-columns:1fr;gap:32px}
+    .guide-cards{grid-template-columns:repeat(2,1fr)}
+    .special-grid{grid-template-columns:repeat(3,1fr);gap:12px}
+    .special-card{padding:20px 10px 18px}
+    .special-icon{width:36px;height:36px;margin-bottom:10px}
+    .special-name{font-size:12px}
+    .special-desc{font-size:10px}
+    .honors-grid{grid-template-columns:1fr;gap:14px}
+    .honors-grid-4{grid-template-columns:1fr;gap:12px}
+    .honor-card{padding:18px 16px}
+    .honors-group-title{flex-direction:column;gap:4px}
   }
   @media (max-width:560px){
     .scenes{grid-template-columns:1fr}
@@ -395,6 +963,80 @@
 </style>
 </head>
 <body>
+<!-- 背景枝条 · 左侧一簇 · 鼠标靠近摆动加大 -->
+<div class="bg-branches" aria-hidden="true">
+  <!-- 主枝1：最左最粗 -->
+  <div class="bg-branch bg-branch-1">
+    <svg viewBox="0 0 500 1600" preserveAspectRatio="xMidYMin slice">
+      <g stroke="#2F5D46" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.08">
+        <path d="M20,0 C60,100 100,200 140,320 C175,420 210,540 240,660 C265,760 285,880 295,1000 C302,1090 308,1200 310,1320"/>
+        <path d="M110,220 C75,270 50,320 30,380"/>
+        <path d="M110,220 C150,255 185,285 220,315"/>
+        <path d="M180,440 C140,490 110,540 85,600"/>
+        <path d="M180,440 C225,475 265,505 305,535"/>
+        <path d="M235,660 C195,710 165,760 140,820"/>
+        <path d="M235,660 C280,695 320,725 360,755"/>
+        <path d="M275,880 C235,930 205,980 180,1040"/>
+        <path d="M275,880 C320,915 360,945 400,975"/>
+        <path d="M298,1100 C258,1150 228,1200 203,1260"/>
+      </g>
+      <g fill="#3a7a5c" opacity="0.07">
+        <ellipse cx="45" cy="370" rx="20" ry="7" transform="rotate(-30 45 370)"/>
+        <ellipse cx="215" cy="310" rx="22" ry="8" transform="rotate(15 215 310)"/>
+        <ellipse cx="100" cy="590" rx="20" ry="7" transform="rotate(-25 100 590)"/>
+        <ellipse cx="300" cy="530" rx="22" ry="8" transform="rotate(20 300 530)"/>
+        <ellipse cx="155" cy="810" rx="20" ry="7" transform="rotate(-35 155 810)"/>
+        <ellipse cx="355" cy="750" rx="22" ry="8" transform="rotate(10 355 750)"/>
+        <ellipse cx="195" cy="1030" rx="20" ry="7" transform="rotate(-20 195 1030)"/>
+        <ellipse cx="395" cy="970" rx="22" ry="8" transform="rotate(25 395 970)"/>
+        <ellipse cx="218" cy="1250" rx="20" ry="7" transform="rotate(-30 218 1250)"/>
+        <ellipse cx="70" cy="420" rx="15" ry="5" transform="rotate(-40 70 420)"/>
+        <ellipse cx="250" cy="360" rx="15" ry="5" transform="rotate(30 250 360)"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 主枝2：中间中等 -->
+  <div class="bg-branch bg-branch-2">
+    <svg viewBox="0 0 500 1400" preserveAspectRatio="xMidYMin slice">
+      <g stroke="#2F5D46" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.065">
+        <path d="M120,-30 C160,80 200,180 240,290 C270,370 300,460 325,550 C345,630 360,720 370,820"/>
+        <path d="M195,200 C160,245 135,290 115,340"/>
+        <path d="M195,200 C235,235 270,265 305,295"/>
+        <path d="M265,400 C225,445 195,490 170,540"/>
+        <path d="M265,400 C305,435 340,465 375,495"/>
+        <path d="M315,590 C275,635 245,680 220,730"/>
+      </g>
+      <g fill="#3a7a5c" opacity="0.055">
+        <ellipse cx="130" cy="335" rx="17" ry="6" transform="rotate(-25 130 335)"/>
+        <ellipse cx="300" cy="290" rx="19" ry="7" transform="rotate(15 300 290)"/>
+        <ellipse cx="185" cy="535" rx="17" ry="6" transform="rotate(-30 185 535)"/>
+        <ellipse cx="370" cy="490" rx="19" ry="7" transform="rotate(20 370 490)"/>
+        <ellipse cx="235" cy="725" rx="17" ry="6" transform="rotate(-20 235 725)"/>
+        <ellipse cx="155" cy="250" rx="14" ry="5" transform="rotate(-35 155 250)"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 主枝3：最右最细 -->
+  <div class="bg-branch bg-branch-3">
+    <svg viewBox="0 0 500 1200" preserveAspectRatio="xMidYMin slice">
+      <g stroke="#2F5D46" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.05">
+        <path d="M240,-40 C275,60 310,150 345,250 C370,320 395,400 415,480 C430,550 440,630 445,720"/>
+        <path d="M310,170 C275,210 250,250 230,295"/>
+        <path d="M310,170 C345,200 375,225 405,250"/>
+        <path d="M375,360 C340,400 315,440 295,485"/>
+      </g>
+      <g fill="#3a7a5c" opacity="0.045">
+        <ellipse cx="245" cy="290" rx="15" ry="5" transform="rotate(-25 245 290)"/>
+        <ellipse cx="400" cy="245" rx="17" ry="6" transform="rotate(15 400 245)"/>
+        <ellipse cx="310" cy="480" rx="15" ry="5" transform="rotate(-30 310 480)"/>
+        <ellipse cx="270" cy="210" rx="12" ry="4" transform="rotate(-35 270 210)"/>
+      </g>
+    </svg>
+  </div>
+</div>
+
 <svg class="svg-defs" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
   <defs>
     <filter id="sealInk" x="-14%" y="-14%" width="128%" height="128%" color-interpolation-filters="sRGB">
@@ -417,23 +1059,22 @@
 <!-- ===== 导航 ===== -->
 <nav>
   <div class="brand">
-    <svg class="brand-mark" viewBox="0 0 32 32" fill="none">
-      <path d="M16 3 L29 10.5 L16 18 L3 10.5 Z" fill="#C9A24B"/>
-      <path d="M3 10.5 L16 18 L16 29 L3 21.5 Z" fill="#8B3A2E"/>
-      <path d="M29 10.5 L16 18 L16 29 L29 21.5 Z" fill="#1E3D2C"/>
-    </svg>
+    <img class="brand-mark" src="assets/logo.svg" alt="中山大学校徽">
     中山大学本科招生网
   </div>
+  <div class="nav-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="搜索专业、学院、分数线…" id="navSearchInput">
+  </div>
   <div class="nav-links">
-    <a href="#" data-svc="学校概况">学校概况</a>
-    <a href="#" data-svc="院系专业">院系专业</a>
-    <a href="#" data-svc="招生章程">招生章程</a>
-    <a href="#" data-svc="招生计划">招生计划</a>
-    <a href="#" data-svc="历年分数">历年分数</a>
-    <a href="#" data-svc="联系院系">联系院系</a>
-    <span class="nav-sep"></span>
-    <a href="#campus">五校园</a>
-    <a href="#motto">校训</a>
+    <a href="#campus" class="nav-anchor">校区简介</a>
+    <a href="#why" class="nav-anchor">数字中大</a>
+    <a href="#freedom" class="nav-anchor">自主选专业</a>
+    <a href="#honors" class="nav-anchor">拔尖培养</a>
+    <a href="#ai-education" class="nav-anchor">AI育人</a>
+    <a href="#special" class="nav-anchor">特殊招生</a>
+    <a href="#guide" class="nav-anchor">报考指南</a>
+    <a href="#motto" class="nav-anchor">校训</a>
   </div>
 </nav>
 
@@ -456,7 +1097,7 @@
   <div class="sec-head">
     <div class="sec-eyebrow">FIVE CAMPUSES</div>
     <h2 class="sec-title">三校区 · 五校园，一所中大</h2>
-    <p class="sec-lead">从珠江之畔到伶仃洋岸，五座校园各有性格。走在这条长廊上，像在广州、深圳与珠海之间走了一遍。</p>
+    <p class="sec-lead">点击对应校园名字可以查看校区简介</p>
   </div>
   <div class="campus-ink-row" id="campusRow"></div>
   <div class="campus-letter" id="campusLetter">
@@ -475,6 +1116,7 @@
           <span class="letter-area"></span>
         </div>
       </div>
+      <div class="letter-nav" id="letterNav"></div>
       <div class="letter-seal" id="letterSeal"></div>
     </div>
   </div>
@@ -486,35 +1128,648 @@
   </div>
 </section>
 
+<!-- ===== 招生快讯 + 学生风采 ===== -->
+<section id="news">
+  <div class="news-grid">
+    <div>
+      <div class="sec-head">
+        <div class="sec-eyebrow">ANNOUNCEMENT</div>
+        <h2 class="sec-title">招生快讯</h2>
+      </div>
+      <ul class="news-list">
+        <li>
+          <span class="news-date">05·29</span>
+          <span class="news-title">中山大学2026年本科招生章程</span>
+          <span class="news-tag">章程</span>
+        </li>
+        <li>
+          <span class="news-date">05·14</span>
+          <span class="news-title">2026年广东省综合评价录取招生简章</span>
+          <span class="news-tag">综评</span>
+        </li>
+        <li>
+          <span class="news-date">05·06</span>
+          <span class="news-title">2026年澳门"四校联考"招生简章</span>
+          <span class="news-tag">港澳</span>
+        </li>
+        <li>
+          <span class="news-date">04·20</span>
+          <span class="news-title">2026年高校专项计划招生简章</span>
+          <span class="news-tag">专项</span>
+        </li>
+        <li>
+          <span class="news-date">04·10</span>
+          <span class="news-title">关于2026年保送生拟录取名单的公示</span>
+          <span class="news-tag">公示</span>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <div class="sec-head">
+        <div class="sec-eyebrow">LISTEN TO US</div>
+        <h2 class="sec-title">听听他们怎么说</h2>
+      </div>
+      <div class="story-card" id="storyCard">
+        <div class="story-viewport" id="storyViewport">
+          <div class="story-slide active">
+            <p class="story-quote">在康乐园的这几年，我慢慢学会了一件事——大学不是用来回答"我要做什么"的，而是用来允许自己"什么都试试"的。中大给了我这种从容。</p>
+            <div class="story-author">
+              <div class="story-author-line"></div>
+              <div class="story-info">
+                <div class="name">林同学</div>
+                <div class="meta">岭南学院 · 2023级 · 广州南校园</div>
+              </div>
+            </div>
+          </div>
+          <div class="story-slide">
+            <p class="story-quote">大学城的实验室几乎成了我的第二个宿舍。从焊第一块电路板到参加电赛，东校园给了我足够的空间去折腾、去犯错，然后在错误里长出真正的能力。</p>
+            <div class="story-author">
+              <div class="story-author-line"></div>
+              <div class="story-info">
+                <div class="name">陈同学</div>
+                <div class="meta">电子与信息工程学院 · 2022级 · 广州东校园</div>
+              </div>
+            </div>
+          </div>
+          <div class="story-slide">
+            <p class="story-quote">北校园的红楼见证了一代代医学生的成长。解剖楼的灯光、附属一院的查房，让我真正理解了"救人救国救世，医病医身医心"这十个字的重量。</p>
+            <div class="story-author">
+              <div class="story-author-line"></div>
+              <div class="story-info">
+                <div class="name">王同学</div>
+                <div class="meta">中山医学院 · 2021级 · 广州北校园</div>
+              </div>
+            </div>
+          </div>
+          <div class="story-slide">
+            <p class="story-quote">珠海的山海之间，天琴计划的实验室就在教学楼隔壁。在这里，课本上的引力波不再是遥远的概念，而是我们可以亲手参与的国家工程。</p>
+            <div class="story-author">
+              <div class="story-author-line"></div>
+              <div class="story-info">
+                <div class="name">张同学</div>
+                <div class="meta">物理与天文学院 · 2023级 · 珠海校区</div>
+              </div>
+            </div>
+          </div>
+          <div class="story-slide">
+            <p class="story-quote">深圳校区的红砖新楼里，智能工程学院的实验室永远灯火通明。和深圳这座城市一样，这里的节奏很快、机会很多，每个人都在把想法变成现实。</p>
+            <div class="story-author">
+              <div class="story-author-line"></div>
+              <div class="story-info">
+                <div class="name">李同学</div>
+                <div class="meta">智能工程学院 · 2022级 · 深圳校区</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="story-dots" id="storyDots"></div>
+        <div class="story-hint">滚动切换 · 五校区学子寄语</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ===== 中大优势 ===== -->
 <section id="why">
   <div class="sec-head" style="text-align:center">
     <div class="sec-eyebrow" style="text-align:center">WHY SYSU</div>
     <h2 class="sec-title">数字里的中大</h2>
   </div>
+
+  <!-- 核心数据：8个 -->
   <div class="stats">
+    <div class="stat">
+      <div class="num">69<small> 个</small></div>
+      <div class="label">学院、直属系<br>覆盖12大学科门类</div>
+    </div>
+    <div class="stat">
+      <div class="num">129<small> 个</small></div>
+      <div class="label">本科专业（办学权）<br>文理医工交融</div>
+    </div>
+    <div class="stat">
+      <div class="num">3.4<small> 万</small></div>
+      <div class="label">在校本科生<br>三校区五校园共同培养</div>
+    </div>
+    <div class="stat">
+      <div class="num">4113<small> 人</small></div>
+      <div class="label">专任教师（不含附属医院）<br>教授占比37.8%</div>
+    </div>
+    <div class="stat">
+      <div class="num">21<small> 位</small></div>
+      <div class="label">两院院士（含双聘）<br>大师云集</div>
+    </div>
     <div class="stat">
       <div class="num">11<small> 个</small></div>
       <div class="label">"双一流"建设学科<br>入选数全国并列第8</div>
     </div>
     <div class="stat">
-      <div class="num">19<small> 个</small></div>
-      <div class="label">学科进入ESI全球前1%<br>居全国高校第2</div>
+      <div class="num">21<small> 个</small></div>
+      <div class="label">学科进入ESI全球前1%<br>内地高校并列第4</div>
     </div>
     <div class="stat">
-      <div class="num">14<small> 个</small></div>
-      <div class="label">第四轮学科评估<br>A类学科</div>
-    </div>
-    <div class="stat">
-      <div class="num">21<small> 位</small></div>
-      <div class="label">两院院士（含双聘）<br>师资力量雄厚</div>
-    </div>
-    <div class="stat">
-      <div class="num">No.6</div>
-      <div class="label">世界大学学术排名<br>内地高校第6位</div>
+      <div class="num">16<small> 个</small></div>
+      <div class="label">学科进入ESI全球前1‰<br>内地高校并列第1</div>
     </div>
   </div>
-  <div class="stats-note">数据来源：中山大学官网及本科招生网公开介绍（2026）</div>
+
+  <!-- 数据可视化：4卡片 2x2 -->
+  <div class="data-viz-grid">
+    <!-- 1. 科研平台条形图 -->
+    <div class="viz-card">
+      <div class="viz-title">科研平台与学科建设</div>
+      <div class="bar-chart">
+        <div class="bar-item">
+          <div class="bar-label">省部级科研机构</div>
+          <div class="bar-track"><div class="bar-fill" style="width:100%"><span>278</span></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-label">博士后科研流动站</div>
+          <div class="bar-track"><div class="bar-fill" style="width:16.9%"><span>47</span></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-label">国家级研究机构</div>
+          <div class="bar-track"><div class="bar-fill" style="width:14%"><span>39</span></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-label">ESI全球前1%学科</div>
+          <div class="bar-track"><div class="bar-fill" style="width:7.6%"><span>21</span></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-label">"双一流"建设学科</div>
+          <div class="bar-track"><div class="bar-fill" style="width:4%"><span>11</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 学科实力层级 -->
+    <div class="viz-card">
+      <div class="viz-title">学科实力层级</div>
+      <div class="tier-chart">
+        <div class="tier-item tier-top">
+          <div class="tier-num">11<span>个</span></div>
+          <div class="tier-info">
+            <div class="tier-name">"双一流"建设学科</div>
+            <div class="tier-desc">入选数全国并列第8</div>
+          </div>
+        </div>
+        <div class="tier-item tier-mid">
+          <div class="tier-num">16<span>个</span></div>
+          <div class="tier-info">
+            <div class="tier-name">ESI全球前1‰学科</div>
+            <div class="tier-desc">内地高校并列第1</div>
+          </div>
+        </div>
+        <div class="tier-item tier-low">
+          <div class="tier-num">21<span>个</span></div>
+          <div class="tier-info">
+            <div class="tier-name">ESI全球前1%学科</div>
+            <div class="tier-desc">内地高校并列第4</div>
+          </div>
+        </div>
+        <div class="tier-item tier-base">
+          <div class="tier-num">129<span>个</span></div>
+          <div class="tier-info">
+            <div class="tier-name">本科专业（办学权）</div>
+            <div class="tier-desc">覆盖12大学科门类</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 升学就业环形图 -->
+    <div class="viz-card">
+      <div class="viz-title">人才培养与升学就业</div>
+      <div class="ring-row">
+        <div class="ring-item">
+          <div class="ring" data-pct="70">
+            <svg viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#e8e0d0" stroke-width="10"/>
+              <circle cx="60" cy="60" r="52" fill="none" stroke="var(--brick)" stroke-width="10"
+                stroke-dasharray="326.7" stroke-dashoffset="98" stroke-linecap="round"
+                transform="rotate(-90 60 60)"/>
+            </svg>
+            <div class="ring-num">~70<small>%</small></div>
+          </div>
+          <div class="ring-label">本科毕业生<br>深造率</div>
+        </div>
+        <div class="ring-item">
+          <div class="ring" data-pct="30">
+            <svg viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#e8e0d0" stroke-width="10"/>
+              <circle cx="60" cy="60" r="52" fill="none" stroke="var(--green)" stroke-width="10"
+                stroke-dasharray="326.7" stroke-dashoffset="228.7" stroke-linecap="round"
+                transform="rotate(-90 60 60)"/>
+            </svg>
+            <div class="ring-num">~30<small>%</small></div>
+          </div>
+          <div class="ring-label">国内<br>保研率</div>
+        </div>
+        <div class="ring-item">
+          <div class="ring" data-pct="96">
+            <svg viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#e8e0d0" stroke-width="10"/>
+              <circle cx="60" cy="60" r="52" fill="none" stroke="var(--gold)" stroke-width="10"
+                stroke-dasharray="326.7" stroke-dashoffset="13.1" stroke-linecap="round"
+                transform="rotate(-90 60 60)"/>
+            </svg>
+            <div class="ring-num">96<small>%+</small></div>
+          </div>
+          <div class="ring-label">境内升学去往<br>"双一流"高校</div>
+        </div>
+      </div>
+      <div class="viz-footnote">
+        <span>近80%就业毕业生进入新一代信息技术、生物医药、新能源等国家重点行业</span>
+      </div>
+    </div>
+
+    <!-- 4. 师资力量与就业去向 -->
+    <div class="viz-card">
+      <div class="viz-title">师资力量与就业去向</div>
+      <div class="faculty-row">
+        <div class="faculty-item">
+          <div class="faculty-num">21<span>位</span></div>
+          <div class="faculty-label">两院院士<br>（含双聘）</div>
+        </div>
+        <div class="faculty-divider"></div>
+        <div class="faculty-item">
+          <div class="faculty-num">600<span>+</span></div>
+          <div class="faculty-label">国家级<br>高层次人才</div>
+        </div>
+        <div class="faculty-divider"></div>
+        <div class="faculty-item">
+          <div class="faculty-num">4113<span>人</span></div>
+          <div class="faculty-label">专任教师<br>（不含附属医院）</div>
+        </div>
+      </div>
+      <div class="employment-bars">
+        <div class="emp-item">
+          <div class="emp-label">国家重点行业就业占比</div>
+          <div class="emp-track"><div class="emp-fill emp-brick" style="width:80%"><span>~80%</span></div></div>
+        </div>
+        <div class="emp-item">
+          <div class="emp-label">粤港澳大湾区就业占比</div>
+          <div class="emp-track"><div class="emp-fill emp-green" style="width:70%"><span>70%+</span></div></div>
+        </div>
+        <div class="emp-item">
+          <div class="emp-label">境外升学QS前100占比</div>
+          <div class="emp-track"><div class="emp-fill emp-gold" style="width:80%"><span>80%+</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-note">数据来源：中山大学官网、本科招生网及信息公开网（2026）</div>
+</section>
+
+<!-- ===== 保选转辅跨 · 自主选专业 ===== -->
+<section id="freedom">
+  <div class="sec-head" style="text-align:center">
+    <div class="sec-eyebrow" style="text-align:center">FREEDOM OF CHOICE</div>
+    <h2 class="sec-title">保选转辅跨 · 自主选专业</h2>
+    <p class="sec-lead" style="text-align:center;max-width:720px;margin:0 auto">从录取到毕业，全周期保障你的专业选择权——零调剂、二次遴选、自由转专业、三级辅修、跨专业选课，让每个人都能找到最适合自己的方向。</p>
+  </div>
+  <div class="freedom-flow">
+    <div class="freedom-card">
+      <div class="freedom-char">保</div>
+      <div class="freedom-title">专业"六保一"</div>
+      <div class="freedom-data">零调剂录取</div>
+      <div class="freedom-desc">报满6个专业必录其一，不调剂到未报考专业；政审体检合格且报满或服从调剂则不退档。</div>
+    </div>
+    <div class="freedom-arrow">→</div>
+    <div class="freedom-card">
+      <div class="freedom-char">选</div>
+      <div class="freedom-title">新生二次遴选</div>
+      <div class="freedom-data">18个专业 · 超400人</div>
+      <div class="freedom-desc">军训期间即可报名，含PPE、博雅学院、整合科学、智慧交通、创新创业实验班等特色专业。</div>
+    </div>
+    <div class="freedom-arrow">→</div>
+    <div class="freedom-card">
+      <div class="freedom-char">转</div>
+      <div class="freedom-title">转专业零门槛</div>
+      <div class="freedom-data">成功率约60%</div>
+      <div class="freedom-desc">所有院系开放接收，每学年至少一次申请，申请次数不限，转出无门槛限制。</div>
+    </div>
+    <div class="freedom-arrow">→</div>
+    <div class="freedom-card">
+      <div class="freedom-char">辅</div>
+      <div class="freedom-title">三级辅修制度</div>
+      <div class="freedom-data">99微专业 · 67辅修 · 37学位</div>
+      <div class="freedom-desc">53个院系开放，微专业12学分/辅修专业25学分/辅修学士40学分，灵活组合跨学科能力。</div>
+    </div>
+    <div class="freedom-arrow">→</div>
+    <div class="freedom-card">
+      <div class="freedom-char">跨</div>
+      <div class="freedom-title">跨专业选课</div>
+      <div class="freedom-data">2800余门 · 占55%</div>
+      <div class="freedom-desc">"学术滴滴"交叉探索平台用户突破1.6万人，打破院系壁垒，自由探索跨学科知识。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 拔尖创新培养 ===== -->
+<section id="honors">
+  <div class="sec-head">
+    <div class="sec-eyebrow">HONORS PROGRAMS</div>
+    <h2 class="sec-title">拔尖创新培养</h2>
+    <p class="sec-lead">7个创新班参与招生，10余个拔尖计划2.0基地，大师引领、本博贯通、小班精育</p>
+  </div>
+
+  <!-- 逸仙X计划 -->
+  <div class="honors-group">
+    <div class="honors-group-title">
+      <span class="honors-group-name">逸仙X计划</span>
+      <span class="honors-group-meta">学校层面专项计划 · 2026首批建设 · 弹性学制本博贯通</span>
+    </div>
+    <div class="honors-grid honors-grid-4">
+      <div class="honor-card">
+        <div class="honor-tags">
+          <span class="honor-tag tag-red">高考直招</span>
+          <span class="honor-tag tag-green">年招10人</span>
+        </div>
+        <div class="honor-name">人工智能创新班</div>
+        <div class="honor-school">智能工程学院 · 深圳校区</div>
+        <div class="honor-desc">聚焦AI前沿应用，本博贯通分阶段培养，"起点选拔—基础培养—能力进阶—高阶发展"四阶递进。</div>
+      </div>
+      <div class="honor-card">
+        <div class="honor-tags">
+          <span class="honor-tag tag-red">高考直招</span>
+        </div>
+        <div class="honor-name">电子信息创新班</div>
+        <div class="honor-school">电子与信息工程学院（微电子学院）· 广州东校园</div>
+        <div class="honor-desc">"电子+光子+信息技术"交叉融合，打造创新人才与卓越工程师培养新高地。</div>
+      </div>
+      <div class="honor-card">
+        <div class="honor-tags">
+          <span class="honor-tag tag-red">高考直招</span>
+        </div>
+        <div class="honor-name">智能信息处理创新班</div>
+        <div class="honor-school">电子与通信工程学院 · 深圳校区</div>
+        <div class="honor-desc">面向智能信息处理领域，强化通信与信息处理基础，对接粤港澳大湾区产业需求。</div>
+      </div>
+      <div class="honor-card">
+        <div class="honor-tags">
+          <span class="honor-tag tag-gold">全校遴选15人</span>
+        </div>
+        <div class="honor-name">生物医药砺新班</div>
+        <div class="honor-school">未来生物医药学院 · 深圳校区</div>
+        <div class="honor-desc">围绕生物医药"高精尖缺"人才需求，整合生物、医学、药学，面向全校大一新生遴选。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 其他拔尖创新 -->
+  <div class="honors-group" style="margin-top:36px">
+    <div class="honors-group-title">
+      <span class="honors-group-name">7个创新班</span>
+      <span class="honors-group-meta">5个高考直招+2个院内遴选，涵盖新工科、新医科、理科前沿</span>
+    </div>
+    <div class="honors-grid honors-grid-4">
+      <div class="honor-card">
+        <div class="honor-tags">
+          <span class="honor-tag tag-red">2026首招</span>
+        </div>
+        <div class="honor-name">BRIGHT-X眼科创新班</div>
+        <div class="honor-school">中山眼科中心 · 深圳校区</div>
+        <div class="honor-desc">全国首个眼科学方向创新班，依托全球顶尖眼科临床与科研平台，本博贯通培养。</div>
+      </div>
+      <div class="honor-card">
+        <div class="honor-tags">
+          <span class="honor-tag tag-red">高考直招</span>
+        </div>
+        <div class="honor-name">鸿网创新班</div>
+        <div class="honor-school">网络空间安全学院 · 广州东校园</div>
+        <div class="honor-desc">面向国家网络安全战略需求，小班化教学与导师制，培养网络空间安全领域拔尖创新人才。</div>
+      </div>
+      <div class="honor-card">
+        <div class="honor-tags">
+          <span class="honor-tag tag-red">2026首招</span>
+          <span class="honor-tag tag-gold">专项奖学金</span>
+        </div>
+        <div class="honor-name">振声创新班</div>
+        <div class="honor-school">生物医学工程学院 · 深圳校区</div>
+        <div class="honor-desc">面向高端医疗装备国家需求，1对1博导指导，1.2万/四年专项奖学金，≤10人小班。</div>
+      </div>
+      <div class="honor-card">
+        <div class="honor-tags">
+          <span class="honor-tag tag-green">高考直招</span>
+        </div>
+        <div class="honor-name">永銮创新班</div>
+        <div class="honor-school">环境科学与工程学院 · 广州东校园</div>
+        <div class="honor-desc">以中国环境科学奠基人唐永銮先生命名，强化环境科学前沿研究，深造率70%以上。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== AI育人新范式 ===== -->
+<section id="ai-education">
+  <div class="sec-head" style="text-align:center">
+    <div class="sec-eyebrow" style="text-align:center">AI · EDUCATION</div>
+    <h2 class="sec-title">AI育人新范式</h2>
+    <p class="sec-lead" style="text-align:center;max-width:720px;margin:0 auto">以"五个一"建设为核心，打造AI产学研协同育人生态——一批AI与X+AI专业、一批AI与X+AI课程、一批AI赋能教学项目、一批AI+人才培养试验区，让每位学生都能在AI时代找到自己的位置。</p>
+  </div>
+
+  <div class="ai-wrap">
+    <!-- 左侧：核心数据 -->
+    <div class="ai-data-col">
+      <div class="ai-data-card">
+        <div class="ai-data-num">63<small>门</small></div>
+        <div class="ai-data-label">人工智能类公选课<br>全校开放</div>
+      </div>
+      <div class="ai-data-card">
+        <div class="ai-data-num">363<small>门</small></div>
+        <div class="ai-data-label">"X+AI"课程<br>2025级培养方案已设置</div>
+      </div>
+      <div class="ai-data-card">
+        <div class="ai-data-num">102<small>门</small></div>
+        <div class="ai-data-label">逸仙智课<br>智慧课程体系</div>
+      </div>
+      <div class="ai-data-card">
+        <div class="ai-data-num">1800<small>+所</small></div>
+        <div class="ai-data-label">智算习堂辐射院校<br>支撑200余门课程</div>
+      </div>
+    </div>
+
+    <!-- 右侧：AI平台与项目 -->
+    <div class="ai-platform-col">
+      <div class="ai-platform-card">
+        <div class="ai-platform-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <div class="ai-platform-info">
+          <div class="ai-platform-name">智算习堂</div>
+          <div class="ai-platform-desc">国内首个基于学科大模型的"AI+HPC+X"创新教育实践平台，依托国家超级计算广州中心"天河二号"。</div>
+        </div>
+      </div>
+      <div class="ai-platform-card">
+        <div class="ai-platform-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        </div>
+        <div class="ai-platform-info">
+          <div class="ai-platform-name">ChatZOC眼科大模型</div>
+          <div class="ai-platform-desc">《AI赋能眼科实践教学》获批教育部"人工智能+高等教育"典型应用场景案例。</div>
+        </div>
+      </div>
+      <div class="ai-platform-card">
+        <div class="ai-platform-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div class="ai-platform-info">
+          <div class="ai-platform-name">逸心心理健康教育大模型</div>
+          <div class="ai-platform-desc">AI智能疗愈、智能讲伴、课程教伴、智能测评，全方位守护学生心理健康。</div>
+        </div>
+      </div>
+      <div class="ai-platform-card ai-beyond">
+        <div class="ai-platform-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 16.8l-6.2 4.5 2.4-7.4L2 9.4h7.6z"/></svg>
+        </div>
+        <div class="ai-platform-info">
+          <div class="ai-platform-name">超越AI（Beyond AI）</div>
+          <div class="ai-platform-desc">培养好奇心与想象力、观察力与感知力、审美力与价值判断力——AI时代更珍贵的人的能力。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-footnote">
+    <span>全体新生在线学习《遇见人工智能》先修课 · 分学部定制"人工智能导论"课程 · 数据来源：中山大学本科招生网（2026）</span>
+  </div>
+</section>
+
+<!-- ===== 报考指南 + 招生视频 ===== -->
+<section id="guide">
+  <div class="sec-head">
+    <div class="sec-eyebrow">APPLICATION GUIDE</div>
+    <h2 class="sec-title">报考指南</h2>
+    <p class="sec-lead">从章程到分数，从专业到院系，你需要的信息都在这里。</p>
+  </div>
+  <div class="guide-wrap">
+    <div class="guide-cards">
+      <div class="guide-card" data-svc="招生章程">
+        <div class="guide-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/></svg></div>
+        <div class="guide-name">招生章程</div>
+        <div class="guide-desc">录取规则与要求</div>
+      </div>
+      <div class="guide-card" data-svc="招生计划">
+        <div class="guide-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></div>
+        <div class="guide-name">招生计划</div>
+        <div class="guide-desc">各省各专业名额</div>
+      </div>
+      <div class="guide-card" data-svc="历年分数">
+        <div class="guide-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="14"/><line x1="6" y1="20" x2="6" y2="6"/><line x1="3" y1="20" x2="21" y2="20"/><polyline points="6 6 10 10 14 7 18 14"/></svg></div>
+        <div class="guide-name">历年分数</div>
+        <div class="guide-desc">录取分数线查询</div>
+      </div>
+      <div class="guide-card" data-svc="院系专业">
+        <div class="guide-icon"><svg viewBox="0 0 24 24"><path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg></div>
+        <div class="guide-name">院系专业</div>
+        <div class="guide-desc">学院与专业介绍</div>
+      </div>
+      <div class="guide-card" data-svc="学校概况">
+        <div class="guide-icon"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/><path d="M12 5V3"/></svg></div>
+        <div class="guide-name">学校概况</div>
+        <div class="guide-desc">中大基本情况</div>
+      </div>
+      <div class="guide-card" data-svc="联系院系">
+        <div class="guide-icon"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="1"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <div class="guide-name">联系院系</div>
+        <div class="guide-desc">各学院招生咨询</div>
+      </div>
+    </div>
+    <div>
+      <div class="video-box" onclick="showToast('概念稿演示：此处将播放中山大学招生宣传视频')">
+        <div class="video-play"></div>
+        <div class="video-label">中山大学2026招生宣传片</div>
+        <div class="video-duration">03:42</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 特殊招生类型 ===== -->
+<section class="special-sec" id="special">
+  <div class="sec-head">
+    <div class="sec-eyebrow">SPECIAL ADMISSION</div>
+    <h2 class="sec-title">特殊招生类型</h2>
+    <p class="sec-desc">多元录取通道，让不同特长的学生都能找到属于自己的路</p>
+  </div>
+  <div class="special-grid">
+    <a href="#" class="special-card" data-svc="强基计划">
+      <div class="special-icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 14h12a4 4 0 0 1 4 4v20a2 2 0 0 0-2-2H8V14z"/>
+          <path d="M40 14H28a4 4 0 0 0-4 4v20a2 2 0 0 1 2-2h14V14z"/>
+          <circle cx="24" cy="22" r="3"/>
+          <path d="M24 19v-3M24 28v-3M20 22h-3M31 22h-3"/>
+        </svg>
+      </div>
+      <div class="special-name">强基计划</div>
+      <div class="special-desc">基础学科拔尖人才培养</div>
+    </a>
+    <a href="#" class="special-card" data-svc="综合评价">
+      <div class="special-icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="8" y="8" width="32" height="32" rx="2"/>
+          <path d="M14 16h20M14 22h20M14 28h12"/>
+          <path d="M30 28l2 2 4-4"/>
+          <circle cx="36" cy="36" r="4" fill="currentColor" stroke="none" opacity=".15"/>
+        </svg>
+      </div>
+      <div class="special-name">综合评价</div>
+      <div class="special-desc">高考+校测+学考多元录取</div>
+    </a>
+    <a href="#" class="special-card" data-svc="艺术类">
+      <div class="special-icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="20" cy="24" r="12"/>
+          <path d="M32 12c4 0 7 3 7 7s-3 7-7 7"/>
+          <path d="M32 12v14"/>
+          <circle cx="16" cy="20" r="1.5" fill="currentColor" stroke="none"/>
+          <circle cx="24" cy="20" r="1.5" fill="currentColor" stroke="none"/>
+          <circle cx="20" cy="28" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <div class="special-name">艺术类</div>
+      <div class="special-desc">音乐、美术、设计等专业招生</div>
+    </a>
+    <a href="#" class="special-card" data-svc="高校专项">
+      <div class="special-icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="24" cy="24" r="14"/>
+          <circle cx="24" cy="24" r="8"/>
+          <circle cx="24" cy="24" r="2.5" fill="currentColor" stroke="none"/>
+          <path d="M24 4v6M24 38v6M4 24h6M38 24h6"/>
+        </svg>
+      </div>
+      <div class="special-name">高校专项</div>
+      <div class="special-desc">面向农村和脱贫地区学生</div>
+    </a>
+    <a href="#" class="special-card" data-svc="港澳台侨">
+      <div class="special-icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 24c6-8 12-8 18 0s12 8 18 0"/>
+          <path d="M6 32c6-8 12-8 18 0s12 8 18 0"/>
+          <circle cx="14" cy="14" r="3"/>
+          <circle cx="24" cy="10" r="3"/>
+          <circle cx="34" cy="14" r="3"/>
+          <path d="M14 17v3M24 13v3M34 17v3"/>
+        </svg>
+      </div>
+      <div class="special-name">港澳台侨</div>
+      <div class="special-desc">港澳台及华侨学生招生</div>
+    </a>
+    <a href="#" class="special-card" data-svc="外语类保送生">
+      <div class="special-icon">
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 8h10l10 24h-8l-2-5H10l-2 5H0l12-24z" transform="translate(6 4)"/>
+          <path d="M16 16l-3 8h6l-3-8z" transform="translate(6 4)"/>
+          <path d="M34 18c2 4 2 8 0 12M30 20c4 2 8 2 12 0M32 26c3 1 6 1 9 0"/>
+        </svg>
+      </div>
+      <div class="special-name">外语类保送生</div>
+      <div class="special-desc">外国语中学优秀毕业生保送</div>
+    </a>
+  </div>
 </section>
 
 <!-- ===== 校训：滚动书写 ===== -->
@@ -551,6 +1806,7 @@
 
 <footer>
   <div class="foot-contact">广东省广州市海珠区新港西路135号 中山大学262栋 教务部招生办公室 ｜ 020-84110558 ｜ adado@mail.sysu.edu.cn ｜ 微信 sysuzs</div>
+  <div class="foot-credit"><details><summary>图片来源：中山大学官网 · 维基共享资源 ｜ 署名与许可<span class="caret">▼</span></summary><div class="credit-body"><p><b>维基共享资源 · CC BY-SA</b>——怀士堂、北门牌坊、马丁堂：摄影 瑞丽江的河水（CC BY-SA 4.0）；北校园医学图书馆：杏林小草（CC BY-SA 3.0）；东校园图书馆（CC BY-SA 3.0）；国家超级计算广州中心：O01326（CC BY-SA 4.0）；东校园北门牌坊：Sparktour（CC BY-SA 4.0）。以上图片依原协议以相同方式共享。</p><p><b>中山大学官网 www.sysu.edu.cn</b>——北校园红楼与医学博物馆、珠海校区天琴中心 / 图书馆 / 若海、深圳校区图书馆 / 红砖建筑群 / 校园全景；版权归中山大学所有，此处作非商业招生宣传概念演示。</p><p>全部照片统一居中裁切为 1:1 并压缩，构图可能与原作不同；完整清单见仓库 <code>docs/图片来源.md</code>。</p></div></details></div>
   <div>中山大学本科招生网 ｜ 三校区五校园 ｜ 博学审问慎思明辨笃行</div>
 </footer>
 
@@ -565,23 +1821,23 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
     {
       name:'珠海校区', short:'珠海', city:'珠海 · 唐家湾',
       photos:[
-        {src:'', cap:'天琴中心'},
-        {src:'', cap:'图书馆'},
-        {src:'', cap:'若海'}
+        {src:'assets/photos/zhuhai/tianqin.jpg', cap:'天琴中心'},
+        {src:'assets/photos/zhuhai/tushuguan.jpg', cap:'图书馆'},
+        {src:'assets/photos/zhuhai/ruohai.jpg', cap:'若海'}
       ],
-      desc:'南海之滨、凤凰山下，三面环山一面向海。天琴中心在此聆听宇宙的引力波，"深海、深空、深地、深蓝"四大学科群扎根于此。这里拥有天琴计划、南海研究院、"中山大学"号科考船等重大平台，仰望星空，脚踏实地，观天测地探海。',
+      desc:'伶仃洋畔、凤凰山下，三面环山、一面临海。2000年9月正式启用，是中大与地方政府合作共建的首个异地校区。天琴计划在此聆听宇宙引力波，激光测距台站曾测出国内最准的地月距离；"中山大学"号科考实习船、"中山大学极地"号破冰科考船与南方海洋实验室在此集结，共筑"深海、深空、深地、深蓝"学科群，观天测地探海。',
       colleges:'中国语言文学系（珠海） · 历史学系（珠海） · 哲学系（珠海） · 国际金融学院 · 国际翻译学院 · 国际关系学院 · 旅游学院 · 数学学院（珠海） · 物理与天文学院 · 大气科学学院 · 海洋科学学院 · 地球科学与工程学院 · 化学工程与技术学院 · 海洋工程与技术学院 · 中法核工程与技术学院 · 土木工程学院 · 测绘科学与技术学院 · 微电子科学与技术学院 · 人工智能学院 · 软件工程学院',
-      address:'珠海市唐家湾镇大学路2号', area:'3.571 km²'
+      address:'珠海市香洲区唐家湾', area:'3.571 km²'
     },
 
     {
       name:'北校园', short:'广州', city:'广州 · 越秀',
       photos:[
-        {src:'', cap:'中山医红楼'},
-        {src:'', cap:'医学图书馆'},
-        {src:'', cap:'校园全景'}
+        {src:'assets/photos/bei/honglou.jpg', cap:'中山医红楼'},
+        {src:'assets/photos/bei/tushuguan.jpg', cap:'医学图书馆'},
+        {src:'assets/photos/bei/bowuguan.jpg', cap:'医学博物馆'}
       ],
-      desc:'珠江之滨的医学殿堂，中山医学院所在地。红楼掩映间，"救人救国救世"的誓言回响百年。作为中大医科传统优势的根基所在，这里汇聚了临床医学、口腔医学、公共卫生、药学与护理学等完整医学学科体系，培养了一代又一代医者。',
+      desc:'珠江之滨的医学殿堂，我国最早的西医教育在此发端。中山医红楼静立于闹市之间，"救人救国救世，医病医身医心"的训词回响百年。作为中大医科传统优势的根基所在，这里汇聚临床医学、口腔医学、公共卫生、护理学等完整学科体系，百年中山医，开西医教育之先河。',
       colleges:'中山医学院 · 光华口腔医学院 · 公共卫生学院 · 护理学院',
       address:'广州市越秀区中山二路74号', area:'0.209 km²'
     },
@@ -589,11 +1845,11 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
     {
       name:'南校园', short:'广州', city:'广州 · 海珠',
       photos:[
-        {src:'', cap:'康乐园 · 怀士堂'},
-        {src:'', cap:'中大北门'},
-        {src:'', cap:'马丁堂'}
+        {src:'assets/photos/nan/huaishitang.jpg', cap:'康乐园 · 怀士堂'},
+        {src:'assets/photos/nan/beimenpaifang.jpg', cap:'中大北门'},
+        {src:'assets/photos/nan/madingtang.jpg', cap:'马丁堂'}
       ],
-      desc:'珠江之畔的康乐园，是中大文脉的起点，也是所有大一新生开启大学生活的地方。红砖绿瓦的怀士堂见证百年春秋，沿中轴线分布的近代建筑群掩映在榕树浓荫之中。这里汇聚了人文社科与基础理学的传统优势学科，漫步其间，处处是百年学府的沉静与厚重。',
+      desc:'珠江之畔的康乐园，中大百年文脉的起点。红砖绿瓦的怀士堂畔，1923年冬孙中山先生留下"立志要做大事，不可要做大官"的嘱托，至今镌刻于堂前。马丁堂、黑石屋等近代建筑群沿中轴线铺展，掩映在古木榕荫之间。这里汇聚人文社科与基础理科的传统优势学科，漫步其间，处处是百年学府的沉静与厚重。',
       colleges:'中国语言文学系 · 历史学系 · 哲学系 · 社会学与人类学学院 · 岭南学院 · 外国语学院 · 数学学院 · 物理学院 · 生命科学学院 · 艺术学院 · 系统科学与工程学院 · 博雅学院(通识教育部)',
       address:'广州市海珠区新港西路135号', area:'1.239 km²'
     },
@@ -601,11 +1857,11 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
     {
       name:'东校园', short:'广州', city:'广州 · 大学城',
       photos:[
-        {src:'', cap:'图书馆'},
-        {src:'', cap:'中心花坛'},
-        {src:'', cap:'教学楼群'}
+        {src:'assets/photos/dong/tushuguan.jpg', cap:'图书馆'},
+        {src:'assets/photos/dong/chaosuan.jpg', cap:'国家超级计算广州中心'},
+        {src:'assets/photos/dong/beimenpaifang.jpg', cap:'北门牌坊'}
       ],
-      desc:'广州大学城的知识之门，工科与信息科学的创新沃土。现代化图书馆矗立其间，年轻学子在此探索前沿科技，与城市共生长。这里汇聚了工学、信息科学与部分社科学科，是中大新工科人才培养的核心阵地。',
+      desc:'广州大学城的知识之门。2004年随大学城启用，国家超级计算广州中心坐落于此，"天河二号"曾六度问鼎世界超算之巅。这里汇聚法学、管理学、新闻传播学、电子信息与计算机等学科，是中大布局新工科与信息科学的核心阵地，年轻学子与前沿科技在此共同生长。',
       colleges:'法学院 · 政治与公共事务管理学院 · 管理学院 · 心理学系 · 新闻传播学院 · 信息管理学院 · 化学学院 · 地理科学与规划学院 · 材料科学与工程学院 · 电子与信息工程学院（微电子学院） · 计算机学院 · 环境科学与工程学院 · 药学院',
       address:'广州市番禺区大学城外环东路132号', area:'0.989 km²'
     },
@@ -613,11 +1869,11 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
     {
       name:'深圳校区', short:'深圳', city:'深圳 · 光明',
       photos:[
-        {src:'', cap:'图书馆'},
-        {src:'', cap:'红砖建筑群'},
-        {src:'', cap:'校园全景'}
+        {src:'assets/photos/shenzhen/tushuguan.jpg', cap:'图书馆'},
+        {src:'assets/photos/shenzhen/hongzhuan.jpg', cap:'红砖建筑群'},
+        {src:'assets/photos/shenzhen/quanjing.jpg', cap:'校园全景'}
       ],
-      desc:'山海之间的红砖新章，紧密契合深圳未来产业发展与创新驱动战略。6.8万平方米的图书馆藏书五百万册，是校区的知识心脏。这里着力发展医科与新型工科，与特区同频共振，是中大服务粤港澳大湾区建设的前沿阵地。',
+      desc:'光明科学城里的红砖新章。2015年获教育部批复建设，2023年底一期校园全面交付，与特区同频共振。6.8万平方米的校区图书馆立于校园中轴线，设计藏书500万册。这里重点建设新医科、新工科，紧密契合深圳产业发展与创新驱动战略，是中大服务粤港澳大湾区建设的前沿阵地。',
       colleges:'医学院 · 公共卫生学院（深圳） · 药学院（深圳） · 材料学院 · 生物医学工程学院 · 电子与通信工程学院 · 智能工程学院 · 航空航天学院 · 农业与生物技术学院 · 生态学院 · 集成电路学院 · 先进制造学院 · 先进能源学院 · 网络空间安全学院 · 管理学院（创业学院） · 理学院 · 柔性电子学院',
       address:'深圳市光明区公常路66号', area:'3.143 km²'
     }
@@ -628,6 +1884,7 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
     var letter = document.getElementById('campusLetter');
     var photosWrap = document.getElementById('letterPhotos');
     var sealBox = document.getElementById('letterSeal');
+    var navBox = document.getElementById('letterNav');
     var lightbox = document.getElementById('lightbox');
     if(!row) return;
     var NS = 'http://www.w3.org/2000/svg';
@@ -678,8 +1935,64 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
         + glyphs + '</svg>';
     }
 
+    var enlargedEl = null;   // 当前被点击放大的照片（同时最多一张）
+    function topPhotos(){
+      return Array.prototype.filter.call(photosWrap.querySelectorAll('.polaroid'), function(el){
+        return !el.classList.contains('enlarged');
+      });
+    }
+    // 放大的照片缩回上部堆叠
+    function restoreEnlarged(){
+      if(!enlargedEl) return;
+      var el = enlargedEl; enlargedEl = null;
+      el.classList.remove('enlarged');
+      el.style.transform = '';
+      var tops = topPhotos();
+      photosWrap.dataset.photoIdx = String(Math.max(0, tops.indexOf(el)));
+      tops.forEach(function(p){ p.classList.toggle('active', p === el); });
+    }
+    // 点击照片：移到左栏下方空白处并随移动放大；再点一次缩回
+    function toggleEnlarge(el){
+      if(el.classList.contains('enlarged')){ restoreEnlarged(); return; }
+      restoreEnlarged();
+      enlargedEl = el;
+      el.classList.remove('active');
+      el.classList.add('enlarged');
+
+      var paper = letter.querySelector('.letter-paper');
+      var paperR = paper.getBoundingClientRect();
+      var wrapR = photosWrap.getBoundingClientRect();
+      var phW = el.offsetWidth, phH = el.offsetHeight;
+      var curCx = wrapR.left + el.offsetLeft + phW/2;   // 变换前的中心
+      var curCy = wrapR.top + el.offsetTop + phH/2;
+
+      var PAD_BOTTOM = 30;
+      var WANT = 1.72;                                  // 目标放大倍数
+      // 下方空白不足时，把信纸撑高到刚好容纳（只加高，不动文字列）
+      var needPaperH = (wrapR.bottom - paperR.top) + phH * WANT + 18 + PAD_BOTTOM;
+      if(paperR.height < needPaperH){
+        paper.style.minHeight = Math.ceil(needPaperH) + 'px';
+        paperR = paper.getBoundingClientRect();
+        wrapR = photosWrap.getBoundingClientRect();
+      }
+
+      // 下方空白区：照片容器底 → 信纸内容底
+      var availTop = wrapR.bottom + 6;
+      var availBottom = paperR.bottom - PAD_BOTTOM;
+      var availH = availBottom - availTop;
+      // 放大倍数：按可用高度撑满（空间已保证），上限 1.85；宽度限制保证不压到装订线
+      var scale = Math.min(1.85, availH / phH);
+      scale = Math.max(scale, 1.4);
+      scale = Math.min(scale, 268 / phW);
+
+      var tx = (wrapR.left + wrapR.width/2 + 14) - curCx;  // 略向装订线方向偏一点
+      var ty = (availTop + availBottom)/2 - curCy;
+      el.style.transform = 'translate(' + tx.toFixed(1) + 'px,' + ty.toFixed(1) + 'px) scale(' + scale.toFixed(3) + ')';
+    }
+
     function renderPhotos(photos){
       photosWrap.innerHTML = '';
+      enlargedEl = null;
       photosWrap.dataset.photoIdx = '1';
       photos.forEach(function(p, i){
         var div = document.createElement('div');
@@ -689,7 +2002,6 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
         if(p.src){
           var im = document.createElement('img');
           im.src = p.src; im.alt = p.cap;
-          im.addEventListener('click', function(){ openLightbox(p.src, p.cap); });
           inner.appendChild(im);
         } else {
           inner.textContent = '照片待替换';
@@ -697,8 +2009,51 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
         var cap = document.createElement('div');
         cap.className = 'ph-cap'; cap.textContent = p.cap;
         div.appendChild(inner); div.appendChild(cap);
+        div.addEventListener('click', function(){ toggleEnlarge(div); });
         photosWrap.appendChild(div);
       });
+    }
+
+    // 学院官网URL映射表
+    var COLLEGE_URLS = {
+      '中国语言文学系':'https://chinese.sysu.edu.cn/','历史学系':'https://history.sysu.edu.cn/',
+      '哲学系':'https://philosophy.sysu.edu.cn/','社会学与人类学学院':'https://saa.sysu.edu.cn/',
+      '岭南学院':'https://lingnan.sysu.edu.cn/','外国语学院':'https://fls.sysu.edu.cn/',
+      '数学学院':'https://math.sysu.edu.cn/','物理学院':'https://physics.sysu.edu.cn/',
+      '生命科学学院':'https://lifescience.sysu.edu.cn/','艺术学院':'https://arts.sysu.edu.cn/',
+      '系统科学与工程学院':'https://sse.sysu.edu.cn/','博雅学院(通识教育部)':'https://lac.sysu.edu.cn/',
+      '法学院':'https://law.sysu.edu.cn/','政治与公共事务管理学院':'https://sog.sysu.edu.cn/',
+      '管理学院':'https://bus.sysu.edu.cn/','心理学系':'https://psychology.sysu.edu.cn/',
+      '新闻传播学院':'https://scs.sysu.edu.cn/','信息管理学院':'https://im.sysu.edu.cn/',
+      '化学学院':'https://ce.sysu.edu.cn/','地理科学与规划学院':'https://geography.sysu.edu.cn/',
+      '材料科学与工程学院':'https://mse.sysu.edu.cn/','电子与信息工程学院（微电子学院）':'https://seit.sysu.edu.cn/',
+      '计算机学院':'https://cse.sysu.edu.cn/','环境科学与工程学院':'https://sese.sysu.edu.cn/',
+      '药学院':'https://pharmacy.sysu.edu.cn/','中山医学院':'https://zssom.sysu.edu.cn/',
+      '光华口腔医学院':'https://gzhs.sysu.edu.cn/','公共卫生学院':'https://sph.sysu.edu.cn/',
+      '护理学院':'https://nursing.sysu.edu.cn/',
+      '中国语言文学系（珠海）':'https://chinesezh.sysu.edu.cn/','历史学系（珠海）':'https://historyzh.sysu.edu.cn/',
+      '哲学系（珠海）':'https://phil-zh.sysu.edu.cn/','国际金融学院':'https://isbf.sysu.edu.cn/',
+      '国际翻译学院':'https://sti.sysu.edu.cn/','国际关系学院':'https://sir.sysu.edu.cn/',
+      '旅游学院':'https://stm.sysu.edu.cn/','数学学院（珠海）':'https://mathzh.sysu.edu.cn/',
+      '物理与天文学院':'https://spa.sysu.edu.cn/','大气科学学院':'https://atmos.sysu.edu.cn/',
+      '海洋科学学院':'https://marine.sysu.edu.cn/','地球科学与工程学院':'https://gs.sysu.edu.cn/',
+      '化学工程与技术学院':'https://cet.sysu.edu.cn/','海洋工程与技术学院':'https://soet.sysu.edu.cn/',
+      '中法核工程与技术学院':'https://ifcen.sysu.edu.cn/','土木工程学院':'https://civil.sysu.edu.cn/',
+      '测绘科学与技术学院':'https://sges.sysu.edu.cn/','微电子科学与技术学院':'https://mst.sysu.edu.cn/',
+      '人工智能学院':'https://sai.sysu.edu.cn/','软件工程学院':'https://sse.sysu.edu.cn/',
+      '医学院':'https://szmed.sysu.edu.cn/','公共卫生学院（深圳）':'https://phs.sysu.edu.cn/',
+      '药学院（深圳）':'https://yxysz.sysu.edu.cn/','材料学院':'https://materials.sysu.edu.cn/',
+      '生物医学工程学院':'https://bme.sysu.edu.cn/','电子与通信工程学院':'https://sece.sysu.edu.cn/',
+      '智能工程学院':'https://ise.sysu.edu.cn/','航空航天学院':'https://saa.sysu.edu.cn/',
+      '农业与生物技术学院':'https://ab.sysu.edu.cn/','生态学院':'https://eco.sysu.edu.cn/',
+      '集成电路学院':'https://sic.sysu.edu.cn/','先进制造学院':'https://am.sysu.edu.cn/',
+      '先进能源学院':'https://ae.sysu.edu.cn/','网络空间安全学院':'https://scst.sysu.edu.cn/',
+      '管理学院（创业学院）':'https://bschool.sysu.edu.cn/','理学院':'https://science.sysu.edu.cn/',
+      '柔性电子学院':'https://sofe.sysu.edu.cn/'
+    };
+    var DEFAULT_COLLEGE_URL = 'https://www.sysu.edu.cn/yxsz/yx.htm';
+    function getCollegeUrl(name){
+      return COLLEGE_URLS[name] || DEFAULT_COLLEGE_URL;
     }
 
     // 鱼骨枝条学院列表
@@ -751,22 +2106,50 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
         pair.className = 'branch-pair';
         pair.style.animationDelay = (0.5 + (k/2) * 0.14) + 's';
 
-        var left = document.createElement('span');
+        var left = document.createElement('a');
         left.className = 'branch-left';
         left.textContent = names[k];
+        left.href = getCollegeUrl(names[k]);
+        left.target = '_blank';
+        left.rel = 'noopener';
         pair.appendChild(left);
 
         var mid = document.createElement('span');
         pair.appendChild(mid);
 
-        var right = document.createElement('span');
+        var right = document.createElement('a');
         right.className = 'branch-right';
         right.textContent = names[k+1] || '';
+        if(names[k+1]){
+          right.href = getCollegeUrl(names[k+1]);
+          right.target = '_blank';
+          right.rel = 'noopener';
+        }
         pair.appendChild(right);
 
         items.appendChild(pair);
       }
       box.appendChild(items);
+    }
+
+    // 右侧导航：列出除当前校区外的其余四个，点击直接切过去
+    function renderNav(curIdx){
+      navBox.innerHTML = '';
+      var label = document.createElement('span');
+      label.className = 'nav-label'; label.textContent = '其他校区';
+      navBox.appendChild(label);
+      CAMPUS_DATA.forEach(function(c, i){
+        if(i === curIdx) return;
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'nav-item';
+        b.setAttribute('aria-label', '切换到' + c.name);
+        b.innerHTML = c.name + '<small>' + c.city.split(' · ')[0] + '</small>';
+        b.addEventListener('click', function(e){
+          e.stopPropagation();
+          switchLetter(i);
+        });
+        navBox.appendChild(b);
+      });
     }
 
     function openLightbox(src, cap){
@@ -779,10 +2162,16 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
     lightbox.querySelector('.lb-close').addEventListener('click', closeLightbox);
     lightbox.addEventListener('click', function(e){ if(e.target === lightbox) closeLightbox(); });
 
-    function openLetter(idx){
+    var letterScrollT1 = 0, letterScrollT2 = 0, letterSwitchT = 0;
+
+    // 把某个校区的内容填进信纸（不含展开/滚动逻辑）
+    function fillLetter(idx){
       activeIdx = idx;
       var d = CAMPUS_DATA[idx];
+      var paper = letter.querySelector('.letter-paper');
+      paper.style.minHeight = '';   // 复位上一校区可能撑高的信纸
       renderPhotos(d.photos);
+      renderNav(idx);
       letter.querySelector('.letter-city').textContent = d.city;
       letter.querySelector('.letter-name').textContent = d.name;
       letter.querySelector('.letter-desc').textContent = d.desc;
@@ -790,14 +2179,46 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
       letter.querySelector('.letter-address').textContent = d.address;
       letter.querySelector('.letter-area').textContent = d.area;
       sealBox.innerHTML = sealSVG(d.name);
-      letter.classList.add('open');
       words.forEach(function(w,i){
         w.classList.toggle('active', i===idx);
         w.classList.toggle('dim', i!==idx);
       });
     }
+
+    // 从右侧导航切换校区：信纸保持展开，仅内容淡出→替换→淡入
+    function switchLetter(idx){
+      if(idx === activeIdx) return;
+      var paper = letter.querySelector('.letter-paper');
+      clearTimeout(letterSwitchT);
+      paper.classList.add('switching');
+      letterSwitchT = setTimeout(function(){
+        fillLetter(idx);
+        paper.classList.remove('switching');
+        // 切换后信纸高度可能变化，重新校正一次居中（不重播展开动画）
+        letter.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 220);
+    }
+
+    function openLetter(idx){
+      fillLetter(idx);
+      letter.classList.add('open');
+
+      // 信纸窗口出现后，画面自动上移，使窗口居于网页正中
+      // （展开过渡为 max-height .8s；先在其过半时平滑滚动，展开完成后再校正一次）
+      clearTimeout(letterScrollT1); clearTimeout(letterScrollT2);
+      letterScrollT1 = setTimeout(function(){
+        letter.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 400);
+      letterScrollT2 = setTimeout(function(){
+        letter.scrollIntoView({behavior:'smooth', block:'center'});
+      }, 900);
+    }
     function closeLetter(){
       activeIdx = -1;
+      clearTimeout(letterSwitchT);
+      var paper = letter.querySelector('.letter-paper');
+      paper.classList.remove('switching');
+      paper.style.minHeight = '';
       letter.classList.remove('open');
       words.forEach(function(w){ w.classList.remove('active','dim'); });
     }
@@ -828,24 +2249,72 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
     });
     document.addEventListener('keydown', function(e){
       if(e.key === 'Escape'){
-        if(lightbox.classList.contains('show')){ closeLightbox(); }
+        if(enlargedEl){ restoreEnlarged(); }
+        else if(lightbox.classList.contains('show')){ closeLightbox(); }
         else if(activeIdx >= 0){ closeLetter(); }
       }
     });
 
-    // ===== 照片区域：滚轮翻页（悬停时滚动鼠标切换哪张在最前） =====
+    // ===== 照片区域：滚轮翻页（悬停时滚动鼠标切换哪张在最前；被点击放大的那张不参与） =====
     document.addEventListener('wheel', function(e){
       var box = e.target.closest('.letter-photos');
       if(!box) return;
       e.preventDefault();
-      var imgs = box.querySelectorAll('.polaroid');
+      var imgs = topPhotos();
       if(imgs.length < 2) return;
-      var idx = parseInt(box.dataset.photoIdx || '1', 10);
+      var idx = parseInt(box.dataset.photoIdx || '0', 10) % imgs.length;
       if(e.deltaY > 0) idx = (idx + 1) % imgs.length;
       else idx = (idx + imgs.length - 1) % imgs.length;
       box.dataset.photoIdx = idx;
       imgs.forEach(function(el, i){ el.classList.toggle('active', i === idx); });
     }, {passive:false});
+  })();
+
+  // ===== 学生风采滚轮切换 =====
+  (function(){
+    var card = document.getElementById('storyCard');
+    var viewport = document.getElementById('storyViewport');
+    var dotsBox = document.getElementById('storyDots');
+    if(!card || !viewport || !dotsBox) return;
+    var slides = viewport.querySelectorAll('.story-slide');
+    var cur = 0;
+    // 生成圆点
+    slides.forEach(function(_, i){
+      var d = document.createElement('button');
+      d.className = 'story-dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', '第' + (i+1) + '位');
+      d.addEventListener('click', function(){ go(i); });
+      dotsBox.appendChild(d);
+    });
+    var dots = dotsBox.querySelectorAll('.story-dot');
+    function go(idx){
+      cur = (idx + slides.length) % slides.length;
+      slides.forEach(function(s, i){ s.classList.toggle('active', i === cur); });
+      dots.forEach(function(d, i){ d.classList.toggle('active', i === cur); });
+    }
+    // 滚轮切换（带节流）
+    var wheelLock = false;
+    card.addEventListener('wheel', function(e){
+      if(slides.length < 2) return;
+      e.preventDefault();
+      if(wheelLock) return;
+      wheelLock = true;
+      if(e.deltaY > 0) go(cur + 1);
+      else go(cur - 1);
+      setTimeout(function(){ wheelLock = false; }, 450);
+    }, {passive:false});
+  })();
+
+  // ===== 导航搜索框 =====
+  (function(){
+    var input = document.getElementById('navSearchInput');
+    if(!input) return;
+    input.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' && input.value.trim()){
+        showToast('概念稿演示：将搜索「' + input.value.trim() + '」相关的招生信息');
+        input.blur();
+      }
+    });
   })();
 
   var fadeEls = document.querySelectorAll('.scene, .bldg, .stat');
@@ -858,6 +2327,26 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
     });
   },{threshold:.12});
   fadeEls.forEach(function(el){ io.observe(el); });
+
+  // 条形图滚动动画
+  (function(){
+    var bars = document.querySelectorAll('.bar-fill');
+    if(!bars.length) return;
+    var widths = [];
+    bars.forEach(function(b){ widths.push(b.style.width); b.style.width = '0'; });
+    var barIO = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          bars.forEach(function(b, i){
+            setTimeout(function(){ b.style.width = widths[i]; }, i * 120);
+          });
+          barIO.disconnect();
+        }
+      });
+    }, {threshold:.3});
+    var chart = document.querySelector('.bar-chart');
+    if(chart) barIO.observe(chart);
+  })();
 
   // toast
   var toast = document.getElementById('toast');
@@ -873,6 +2362,12 @@ var GLYPH_IMAGES = {"南": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAApQAAA
       e.preventDefault();
       var name = el.dataset.name || el.dataset.svc;
       showToast('概念稿演示：此处将链接至招生网「' + name + '」栏目');
+    });
+  });
+
+  document.querySelectorAll('.news-title').forEach(function(el){
+    el.addEventListener('click', function(){
+      showToast('概念稿演示：此处将打开公告详情');
     });
   });
 
@@ -933,6 +2428,45 @@ var CHAR_DATA={"博":{"s":["M 281 511 Q 380 544 381 545 Q 388 552 384 561 Q 377 
   window.addEventListener('scroll',onMottoScroll,{passive:true});
   window.addEventListener('resize',onMottoScroll);
   onMottoScroll();
+
+  /* ===== 导航栏滚动高亮 ===== */
+  var navAnchors=document.querySelectorAll('.nav-anchor');
+  var navSections=[];
+  navAnchors.forEach(function(a){
+    var id=a.getAttribute('href').slice(1);
+    var sec=document.getElementById(id);
+    if(sec) navSections.push({anchor:a,sec:sec});
+  });
+  function updateNavActive(){
+    var scrollY=window.scrollY+120;
+    var current=null;
+    navSections.forEach(function(item){
+      if(item.sec.offsetTop<=scrollY) current=item;
+    });
+    navAnchors.forEach(function(a){a.classList.remove('active')});
+    if(current) current.anchor.classList.add('active');
+  }
+  window.addEventListener('scroll',updateNavActive,{passive:true});
+  updateNavActive();
+
+  /* ===== 背景枝条 · 鼠标靠近摆动加大 ===== */
+  var bgBranches=document.querySelector('.bg-branches');
+  if(bgBranches){
+    var branchHoverZone=0.32;
+    var branchSwayTimer=null;
+    document.addEventListener('mousemove',function(e){
+      var ratio=e.clientX/window.innerWidth;
+      if(ratio<branchHoverZone){
+        var proximity=1-ratio/branchHoverZone;
+        var swayVal=1+proximity*2.8;
+        bgBranches.style.setProperty('--sway',swayVal.toFixed(2));
+        bgBranches.classList.add('hover-active');
+      }else{
+        bgBranches.classList.remove('hover-active');
+        bgBranches.style.setProperty('--sway','1');
+      }
+    },{passive:true});
+  }
 })();
 </script>
 
